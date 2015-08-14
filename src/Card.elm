@@ -13,6 +13,7 @@ type alias Card =
 
 type Action
   = UpdateName String
+  | Delete
   | Save
 
 update : Action -> Card -> Card
@@ -31,6 +32,9 @@ view address card =
       [ button
         [ onClick address Save ]
         [ text "Save" ]
+      , button
+        [ onClick address Delete ]
+        [ text "Delete" ]
       ]
     , div []
       [ input

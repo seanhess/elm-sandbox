@@ -25,7 +25,6 @@ newCard uid n = { id = uid, name = n }
 type Action
     = NoOp
     | Add
-    | Delete Int
     | Edit Int
     | OpenedCard Card.Action
 
@@ -40,13 +39,20 @@ update action model =
               , uid <- model.uid + 1
       }
 
-    (Delete id) ->
-      model
-
     (Edit id) ->
       { model | editing <-
           List.head (List.filter (isId id) model.cards)
       }
+
+    (OpenedCard Delete) ->
+      case model.editing of
+        Nothing -> model
+        Just card ->
+          let cards = List.filter (not << isId card.id) model.cards
+          in
+          { model | editing <- Nothing
+                  , cards <- cards
+          }
 
     (OpenedCard Save) ->
       case model.editing of
@@ -54,10 +60,10 @@ update action model =
         Just card ->
           -- replace it in the list
           -- set editing to nothing
-          let a = []
+          let cards = List.map (replaceWith (isId card.id) (\_ -> card)) model.cards
           in
           { model | editing <- Nothing
-                  , cards <- List.map (replaceWith (isId card.id) (\_ -> card)) model.cards
+                  , cards <- cards
           }
 
     (OpenedCard act) ->
