@@ -1,23 +1,28 @@
-import Html exposing (div, button, text, Html, h1, li, a, input)
-import Html.Attributes exposing (style, value)
-import Html.Events exposing (onClick, on, targetValue)
+import Html exposing (div, button, text, Html, h1, li, a, input, form, Attribute)
+import Html.Attributes exposing (style, value, action, key)
+import Html.Events exposing (onClick, on, targetValue, onSubmit)
 import Signal exposing (Signal, Address)
 import StartApp
-import Random exposing (Seed)
 import Card exposing (Card, Action(..))
 import Style exposing (clickable)
+import Debug
 
+main : Signal Html
 main =
   StartApp.start { model = emptyModel, view = view, update = update }
+
+type ItemSort = SortAlpha | SortId
 
 type alias Model =
   { cards : List Card
   , uid : Int
+  , sort : ItemSort
   , editing : Maybe Card
+  , newText : String
   }
 
 emptyModel : Model
-emptyModel = { cards = [], editing = Nothing, uid = 1 }
+emptyModel = { cards = [], editing = Nothing, sort = SortId, uid = 1, newText = "" }
 
 newCard : Int -> String -> Card
 newCard uid n = { id = uid, name = n }
@@ -26,7 +31,14 @@ type Action
     = NoOp
     | Add
     | Edit Int
+    | DeleteInline Int
+    | ChangeSort ItemSort
     | OpenedCard Card.Action
+    | UpdateNewText String
+
+
+deleteCard : Int -> List Card -> List Card
+deleteCard id cards = List.filter (not << isId id) cards
 
 update : Action -> Model -> Model
 update action model =
@@ -35,14 +47,25 @@ update action model =
         model
 
     Add ->
-      { model | cards <- model.cards ++ [newCard model.uid "New Card"]
-              , uid <- model.uid + 1
-      }
+      case model.newText of
+        "" -> model
+        txt ->
+          Debug.watch "newText"
+          { model | cards <- model.cards ++ [newCard model.uid model.newText]
+                  , uid <- model.uid + 1
+                  , newText <- ""
+          }
+
+    (ChangeSort srt) ->
+      { model | sort <- srt }
 
     (Edit id) ->
       { model | editing <-
           List.head (List.filter (isId id) model.cards)
       }
+
+    (UpdateNewText txt) ->
+      { model | newText <- txt }
 
     (OpenedCard Delete) ->
       case model.editing of
@@ -53,6 +76,9 @@ update action model =
           { model | editing <- Nothing
                   , cards <- cards
           }
+
+    (DeleteInline id) ->
+      { model | cards <- deleteCard id model.cards }
 
     (OpenedCard Save) ->
       case model.editing of
@@ -73,6 +99,7 @@ update action model =
           { model | editing <- Just (Card.update act card)}
 
 
+
 view : Address Action -> Model -> Html
 view address model =
   let content =
@@ -88,21 +115,44 @@ view address model =
     , content
     ]
 
+sortCards : ItemSort -> List Card -> List Card
+sortCards s cs =
+  case s of
+    SortId -> List.sortBy .id cs
+    SortAlpha -> List.sortBy .name cs
+
 listPage : Address Action -> Model -> Html
 listPage address model =
   div [ style [("background-color", "red")] ]
-    [ button [ onClick address Add ] [ text "Add" ]
-    , div [] (List.map (cardItem address) model.cards)
+    [ form [ onSubmit address Add, action "javascript:none" ]
+        [ button [ ] [ text "Addz" ]
+        , input
+            [ value model.newText
+            , on "input" targetValue (Signal.message address << UpdateNewText)
+            ]
+            []
+        ]
+    , div []
+        [ button [ onClick address (ChangeSort SortAlpha)] [ text "sort A-Z" ]
+        , button [ onClick address (ChangeSort SortId)] [ text "sort ID" ]
+        ]
+    , div [] (List.map (cardItem address) (sortCards model.sort model.cards))
     ]
 
 cardItem : Address Action -> Card -> Html
 cardItem address card =
-  li []
+  li
+    [ key (toString card.id) ]
     [ a
         [ style clickable
         , onClick address (Edit card.id)
         ]
         [ text card.name ]
+    , text " "
+    , a [ style clickable
+        , onClick address (DeleteInline card.id)
+        ]
+        [ text "X" ]
     ]
 
 ---------------------------------------------

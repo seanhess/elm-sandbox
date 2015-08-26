@@ -4,7 +4,6 @@ import Html exposing (div, button, text, Html, h1, li, a, input)
 import Html.Attributes exposing (style, value)
 import Html.Events exposing (onClick, on, targetValue)
 import Signal exposing (Signal, Address)
-import Style exposing (clickable)
 
 type alias Card =
   { id : Int
