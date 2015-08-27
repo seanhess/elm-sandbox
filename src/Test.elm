@@ -3,9 +3,15 @@ import Html.Attributes exposing (style, value, action, key)
 import Html.Events exposing (onClick, on, targetValue, onSubmit)
 import Signal exposing (Signal, Address)
 import StartApp
-import Card exposing (Card, Action(..))
-import Style exposing (clickable)
+--import Style exposing (clickable)
 import Debug
+import Svg exposing (svg, rect, circle, g)
+import Svg.Attributes exposing (width, height, viewBox)
+
+import Svg exposing (svg, rect, g, text')
+--import Svg.Events as SE
+import Svg.Attributes as SA exposing (x, y, width, height, rx, ry, fill, textAnchor, transform)
+import Card exposing (Card, Action(..))
 
 main : Signal Html
 main =
@@ -22,7 +28,7 @@ type alias Model =
   }
 
 emptyModel : Model
-emptyModel = { cards = [], editing = Nothing, sort = SortId, uid = 1, newText = "" }
+emptyModel = { cards = [Card 1 "one", Card 2 "two", Card 3 "three"], editing = Nothing, sort = SortId, uid = 4, newText = "" }
 
 newCard : Int -> String -> Card
 newCard uid n = { id = uid, name = n }
@@ -50,7 +56,7 @@ update action model =
       case model.newText of
         "" -> model
         txt ->
-          Debug.watch "newText"
+          Debug.watch "add"
           { model | cards <- model.cards ++ [newCard model.uid model.newText]
                   , uid <- model.uid + 1
                   , newText <- ""
@@ -115,12 +121,6 @@ view address model =
     , content
     ]
 
-sortCards : ItemSort -> List Card -> List Card
-sortCards s cs =
-  case s of
-    SortId -> List.sortBy .id cs
-    SortAlpha -> List.sortBy .name cs
-
 listPage : Address Action -> Model -> Html
 listPage address model =
   div [ style [("background-color", "red")] ]
@@ -136,24 +136,9 @@ listPage address model =
         [ button [ onClick address (ChangeSort SortAlpha)] [ text "sort A-Z" ]
         , button [ onClick address (ChangeSort SortId)] [ text "sort ID" ]
         ]
-    , div [] (List.map (cardItem address) (sortCards model.sort model.cards))
+    , div [] [ cardList' address model ]
     ]
 
-cardItem : Address Action -> Card -> Html
-cardItem address card =
-  li
-    [ key (toString card.id) ]
-    [ a
-        [ style clickable
-        , onClick address (Edit card.id)
-        ]
-        [ text card.name ]
-    , text " "
-    , a [ style clickable
-        , onClick address (DeleteInline card.id)
-        ]
-        [ text "X" ]
-    ]
 
 ---------------------------------------------
 
@@ -165,3 +150,72 @@ replaceWith p trans item =
   if p item
     then trans item
     else item
+
+sortCards : ItemSort -> List Card -> List Card
+sortCards s cs =
+  case s of
+    SortId -> List.sortBy .id cs
+    SortAlpha -> List.sortBy .name cs
+
+----------------------------------------------------
+
+cardList : Address Action -> Model -> Html
+cardList address model =
+  svg
+    [ width "500", height "500", viewBox "0 0 500 500" ]
+    (List.indexedMap (cardItem address) (sortCards model.sort model.cards))
+
+
+cardItem : Address Action -> Int -> Card -> Html
+cardItem address index card =
+  let x' = 100
+      y' = 50 + (index * 100)
+      tm = "translate(" ++ toString x' ++ "," ++ toString y' ++ ")"
+  in
+  g
+    [ key (toString card.id)
+    , width "100"
+    , height "100"
+    , transform tm
+    ]
+    [ rect
+        [ width "100"
+        , height "100"
+        , x "0"
+        , y "0"
+        , rx "15"
+        , ry "15"
+        , SA.style "fill: #0000FF"
+        ] []
+    , text' [ fill "black", textAnchor "middle"] [ text card.name ]
+    ]
+
+cardList' : Address Action -> Model -> Html
+cardList' address model =
+  div
+    [ style [("background","green"), ("width","400"), ("height", "400")] ]
+    (List.indexedMap (cardItem' address) (sortCards model.sort model.cards))
+
+cardItem' : Address Action -> Int -> Card -> Html
+cardItem' address index card =
+  let x' = 100
+      y' = 50 + (index * 40)
+      tm = "translate(" ++ toString x' ++ "px," ++ toString y' ++ "px) rotate(20deg)"
+      k = Debug.watch "key" (toString card.id)
+  in
+  div
+    [ key k
+    , style
+        [ ("width","100")
+        , ("height","100")
+        , ("padding", "10px")
+        , ("color", "white")
+        , ("transition", "transform 2s")
+        , ("transform", tm)
+        , ("background","blue")
+        , ("position","absolute")
+        , ("border", "solid 1px white")
+        ]
+    ]
+    [ text card.name ]
+
