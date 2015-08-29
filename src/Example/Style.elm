@@ -1,4 +1,4 @@
-module Style where
+module Example.Style where
 
 -- styles ------------------------------------------
 

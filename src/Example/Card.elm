@@ -1,4 +1,4 @@
-module Card where
+module Example.Card where
 
 import Html exposing (div, button, text, Html, h1, li, a, input)
 import Html.Attributes exposing (style, value)

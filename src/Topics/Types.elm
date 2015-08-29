@@ -7,3 +7,5 @@ type alias TopicTerm =
   , overallFrequency : Float
   }
 
+-- based on the KEY, I need to animate this
+-- umm.. I have no idea.

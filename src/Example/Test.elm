@@ -1,8 +1,9 @@
+module Example.Test where
 import Html exposing (div, button, text, Html, h1, li, a, input, form, Attribute)
 import Html.Attributes exposing (style, value, action, key)
 import Html.Events exposing (onClick, on, targetValue, onSubmit)
 import Signal exposing (Signal, Address)
-import StartApp
+import StartApp.Simple as StartApp
 --import Style exposing (clickable)
 import Debug
 import Svg exposing (svg, rect, circle, g)
@@ -11,7 +12,7 @@ import Svg.Attributes exposing (width, height, viewBox)
 import Svg exposing (svg, rect, g, text')
 --import Svg.Events as SE
 import Svg.Attributes as SA exposing (x, y, width, height, rx, ry, fill, textAnchor, transform)
-import Card exposing (Card, Action(..))
+import Example.Card as Card exposing (Card, Action(..))
 
 main : Signal Html
 main =

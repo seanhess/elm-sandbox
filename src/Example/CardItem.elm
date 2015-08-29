@@ -1,4 +1,4 @@
-module CardItem where
+module Example.CardItem where
 
 -- you know, using a full-on FRP system might make more sense anyway
 -- it's probably a really good fit for this domain
@@ -9,7 +9,7 @@ module CardItem where
 import Easing exposing (ease, easeOutBounce, float)
 import Effects exposing (Effects)
 import Time exposing (Time, second)
-import Card exposing (Card)
+import Example.Card exposing (Card)
 import Html exposing (div, text, Html)
 import Signal exposing (Address)
 import Html.Attributes exposing (..)
