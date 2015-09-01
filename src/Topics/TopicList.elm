@@ -1,7 +1,8 @@
 module Topics.TopicList where
 
+import Animation exposing (..)
 import Effects exposing (Effects, Never)
-import Easing exposing (ease, easeOutBounce, easeInQuad, easeInOutQuad, float)
+-- import Easing exposing (ease, easeOutBounce, easeInQuad, easeInOutQuad, float)
 
 import Html exposing (div, h1, text, Html, a)
 import Html.Attributes exposing (style, href)
@@ -18,7 +19,8 @@ import Task exposing (Task)
 import Topics.Types exposing (TopicTerm)
 import Topics.TopicRow as TopicRow exposing (RowTransition, indexY)
 
-import Debug
+import List.Extra as List
+import Maybe exposing (withDefault)
 
 type alias Model =
   { terms : List TopicTerm
@@ -27,53 +29,17 @@ type alias Model =
   , transition : Transition
   }
 
-
 --------------------------------------------------------
 
-type alias Transition =
-  { elapsed : Time
-  , timer : Timer
-  , duration : Time
-  , effect : Effects Action
-  }
+-- it's the animation and the current percent
+-- ah, the problem is starting / stopping
+type Transition = Transition (Maybe Animation) Float
 
-type Timer = Started | Stopped | Running Time
+start : Transition
+start = Transition Nothing 1
 
-transition : Time -> Transition
-transition dur = { elapsed = dur, duration = dur, timer = Stopped, effect = Effects.none}
-
-start : Transition -> Transition
-start trans =
-  let effect =
-        case trans.timer of
-          Stopped -> Effects.tick Tick
-          _ -> Effects.none
-  in { trans | elapsed <- 0, timer <- Started, effect <- effect}
-
-stop : Transition -> Transition
-stop trans = { trans | elapsed <- trans.duration, timer <- Stopped, effect <- Effects.none }
-
-run : Transition -> Time -> Transition
-run trans newTime =
-  let {elapsed, timer} = trans
-      newElapsed =
-        case timer of
-          Running oldTime ->
-            elapsed + (newTime - oldTime)
-          _ -> 0
-  in
-
-  if newElapsed > trans.duration
-    then stop trans
-    else { trans | elapsed <- newElapsed, timer <- Running newTime, effect <- Effects.tick Tick }
-
-duration : Time
-duration = second / 2
-
-offsetY : Int -> Time -> Float
-offsetY dIndex elapsed =
-  ease easeInOutQuad float (indexY dIndex) 1 duration elapsed
-
+stop : Transition
+stop = Transition Nothing 0
 
 -----------------------------------------------------------
 
@@ -84,29 +50,45 @@ type Action = RowAction TopicRow.Action | ChangeSort ListSort | Tick Time
 update : Action -> Model -> (Model, Effects Action)
 update action model =
   case action of
-    RowAction _ -> (model, model.transition.effect)
+    RowAction _ -> (model, Effects.none)
 
     ChangeSort sort ->
-      let d = Debug.log "sort" sort
-          trans = start model.transition
-      in
+      -- don't do anything if we haven't changed
+      if sort == model.sort then
+        (model, Effects.none)
+
+      else
       ( { model
           | sort <- sort
           , oldSort <- model.sort
-          , transition <- trans
+          , transition <- start
         }
-      , trans.effect
+      , Effects.tick Tick
       )
 
     Tick newTime ->
-      let trans = run model.transition newTime
-          b = Debug.log "trans" trans
-      in
+      case model.transition of
+        Transition Nothing 1 ->
+          let anim = animateIndex newTime in
+          ( { model | transition <- Transition (Just anim) (animate newTime anim) }
+          , Effects.tick Tick
+          )
 
-      ( { model | transition <- trans }
-      , trans.effect
-      )
+        Transition _ 0 ->
+          ( { model | transition <- Transition Nothing 0 }
+          , Effects.none
+          )
 
+        Transition (Just anim) _ ->
+          ( { model | transition <- Transition (Just anim) (animate newTime anim) }
+          , Effects.tick Tick
+          )
+
+
+
+animateIndex : Time -> Animation
+animateIndex time =
+  animation time |> from 1 |> to 0 |> duration (second/2)
 
 init : (Model, Effects Action)
 init = (emptyModel, Effects.none)
@@ -121,7 +103,7 @@ emptyModel : Model
 emptyModel =
   { sort = SortScore
   , oldSort = SortScore
-  , transition = transition duration
+  , transition = stop
   , terms =
       [ TopicTerm "one" 0.1 1
       , TopicTerm "two" 0.2 1
@@ -145,19 +127,29 @@ type alias TermIndex =
 emptyIndex index term = { term = term, index = index, oldIndex = 0 }
 setOldIndex ix termIndex = { termIndex | oldIndex <- ix }
 
-rowModel : Transition -> TermIndex -> TopicRow.Model
-rowModel {elapsed, timer} {term, index, oldIndex} =
+rowModel : Float -> Int -> Int -> TopicTerm -> TopicRow.Model
+rowModel pct oldIndex index term =
   { term = term
   , index = index
-  , transition = offsetY (oldIndex - index) elapsed
+  , transition = pct * (indexY (oldIndex - index))
   }
 
 rowModels : Transition -> ListSort -> ListSort -> List TopicTerm -> List TopicRow.Model
-rowModels trans oldSort newSort terms =
-  let tis = List.indexedMap emptyIndex (List.sortBy (sortTerms newSort) terms)
-      byOld = List.sortBy (sortTerms oldSort << .term) tis
-      tis' = List.indexedMap (setOldIndex) byOld
-  in List.map (rowModel trans) tis'
+rowModels (Transition _ pct) oldSort newSort terms =
+  let newIxs = sortIndexes newSort terms
+      oldIxs = sortIndexes oldSort terms
+  in List.map3 (rowModel pct) oldIxs newIxs terms
+
+termIndex : List TopicTerm -> TopicTerm -> Int
+termIndex sorted term = withDefault -1 <| List.findIndex (\t -> t == term) sorted
+
+sortIndexes : ListSort -> List TopicTerm -> List Int
+sortIndexes sort terms =
+  let sorted = List.sortBy (sortTerms sort) terms
+      indexes = List.map (termIndex sorted) terms
+  in indexes
+
+--------------------------------------------------------------
 
 view : Address Action -> Model -> Html
 view address model =
