@@ -21,6 +21,7 @@ import Topics.TopicRow as TopicRow exposing (RowTransition, indexY)
 
 import List.Extra as List
 import Maybe exposing (withDefault)
+import Debug
 
 type alias Model =
   { terms : List TopicTerm
@@ -31,15 +32,26 @@ type alias Model =
 
 --------------------------------------------------------
 
--- it's the animation and the current percent
--- ah, the problem is starting / stopping
-type Transition = Transition (Maybe Animation) Float
+type alias Transition =
+  { animation : Maybe Animation
+  , value : Float
+  }
 
 start : Transition
 start = Transition Nothing 1
 
 stop : Transition
 stop = Transition Nothing 0
+
+currentValue : Transition -> Time -> Float
+currentValue trans time =
+  case trans.animation of
+    Nothing -> trans.value
+    Just anim -> animate time anim
+
+updateTrans : Transition -> Time -> Transition
+updateTrans trans time = { trans | value <- currentValue trans time }
+
 
 -----------------------------------------------------------
 
@@ -67,22 +79,26 @@ update action model =
       )
 
     Tick newTime ->
-      case model.transition of
-        Transition Nothing 1 ->
-          let anim = animateIndex newTime in
-          ( { model | transition <- Transition (Just anim) (animate newTime anim) }
+      let trans = model.transition in
+      case trans.animation of
+        Nothing ->
+          let anim = animateIndex newTime
+              trans' = Transition (Just anim) 1
+          in
+          ( { model
+              | transition <- updateTrans trans' newTime }
           , Effects.tick Tick
           )
 
-        Transition _ 0 ->
-          ( { model | transition <- Transition Nothing 0 }
-          , Effects.none
-          )
-
-        Transition (Just anim) _ ->
-          ( { model | transition <- Transition (Just anim) (animate newTime anim) }
-          , Effects.tick Tick
-          )
+        Just (anim) ->
+          if (trans.value <= 0) then
+            ( { model | transition <- stop }
+            , Effects.none
+            )
+          else
+            ( { model | transition <- updateTrans trans newTime }
+            , Effects.tick Tick
+            )
 
 
 
@@ -135,10 +151,10 @@ rowModel pct oldIndex index term =
   }
 
 rowModels : Transition -> ListSort -> ListSort -> List TopicTerm -> List TopicRow.Model
-rowModels (Transition _ pct) oldSort newSort terms =
+rowModels trans oldSort newSort terms =
   let newIxs = sortIndexes newSort terms
       oldIxs = sortIndexes oldSort terms
-  in List.map3 (rowModel pct) oldIxs newIxs terms
+  in List.map3 (rowModel trans.value) oldIxs newIxs terms
 
 termIndex : List TopicTerm -> TopicTerm -> Int
 termIndex sorted term = withDefault -1 <| List.findIndex (\t -> t == term) sorted
