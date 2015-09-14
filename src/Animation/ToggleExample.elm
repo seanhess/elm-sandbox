@@ -14,23 +14,38 @@ import String
 
 --------------------------------------------------------------------
 
-type alias Transition = List Animation
+type alias Transition =
+  { animations : List Animation
+  , time : Time
+  }
 
-none = []
+none = { animations = [], time = 0 }
 
-addTransition : Animation -> Transition -> Transition
-addTransition a ts = a :: ts
+add : Animation -> Transition -> Transition
+add a trans = { trans | animations <- a :: trans.animations }
 
-cleanup : Time -> Transition -> Transition
-cleanup time ts = List.filter (not << Animation.isDone time) ts
+-- should always be zero
+-- should go from max value
+-- have good defaults and easing
+
+tick : Time -> Transition -> Transition
+tick time trans =
+  let anims = List.filter (not << Animation.isDone time) trans.animations
+  in { trans | animations <- anims
+             , time <- time
+     }
 
 transitionValue : Time -> Transition -> Float
 transitionValue time trans =
-  List.map (animate time) trans
-    |> List.sum
+  List.sum <| List.map (animate time) trans.animations
 
 dump : Time -> Transition -> String
-dump time ts = toString <| List.map (animate time) ts
+dump time trans = toString <| List.map (animate time) trans.animations
+
+anim : Time -> Float -> Animation
+anim t s =
+  animation t |> from s |> to 0 |> duration (0.8 * second)
+
 
 --------------------------------------------------------------------
 
@@ -64,25 +79,21 @@ update action model =
         Open ->
           { model
             | state <- Closed
-            , transition <- addTransition ( anim model.time maxWidth) model.transition
+            , transition <- add (anim model.time maxWidth) model.transition
           }
 
         Closed ->
           { model
             | state <- Open
-            , transition <- addTransition ( anim model.time -maxWidth ) model.transition
+            , transition <- add (anim model.time -maxWidth) model.transition
           }
       in
       ( model'
       , Effects.none )
 
     Tick t ->
-      ( { model | time <- t, transition <- cleanup model.time model.transition }
+      ( { model | time <- t, transition <- tick model.time model.transition }
       , Effects.tick Tick )
-
-anim : Time -> Float -> Animation
-anim t s =
-  animation t |> from s |> to 0 |> duration (0.8 * second)
 
 -- I need a timer in there
 -- effects?
@@ -114,7 +125,7 @@ view address model =
         [ pre []
             [ text <| String.join "\n"
                 [ "time: " ++ toString (round (model.time / 1000))
-                , "trans: " ++ toString (List.length model.transition) ++ " " ++ dump model.time model.transition
+                , "trans: " ++ toString (List.length model.transition.animations) ++ " " ++ dump model.time model.transition
                 ]
             ]
         ]
