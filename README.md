@@ -1,1 +1,6 @@
-Playing with elm
+Elm Sandbox
+===========
+
+Experiments
+-----------
+

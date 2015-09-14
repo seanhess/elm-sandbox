@@ -27,10 +27,13 @@ type alias Model =
   { terms : List TopicTerm
   , sort : ListSort
   , oldSort : ListSort
+
+  -- we use a single transition for all of them because they animate for the same amount of time
   , transition : Transition
   }
 
 --------------------------------------------------------
+-- this stuff can be moved to a library
 
 type alias Transition =
   { animation : Maybe Animation
@@ -51,7 +54,6 @@ currentValue trans time =
 
 updateTrans : Transition -> Time -> Transition
 updateTrans trans time = { trans | value <- currentValue trans time }
-
 
 -----------------------------------------------------------
 
@@ -79,6 +81,7 @@ update action model =
       )
 
     Tick newTime ->
+      -- most of this can be moved to a library
       let trans = model.transition in
       case trans.animation of
         Nothing ->

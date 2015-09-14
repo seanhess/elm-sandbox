@@ -79,6 +79,10 @@ myStyle =
     , ("text-align", "center")
     ]
 
+-- you can't OWN the effects
+-- need some way of combinging them with other ones though?
+-- and if it's just
+
 -- port runZip : Task x ()
 -- port runZip =
   -- lookupZipCode "84108"

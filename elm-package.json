@@ -17,7 +17,8 @@
         "evancz/elm-svg": "2.0.0 <= v < 3.0.0",
         "evancz/start-app": "2.0.0 <= v < 3.0.0",
         "evancz/task-tutorial": "1.0.2 <= v < 2.0.0",
-        "mgold/elm-animation": "1.0.0 <= v < 2.0.0"
+        "mgold/elm-animation": "1.0.0 <= v < 2.0.0",
+        "mgold/elm-join": "1.0.0 <= v < 2.0.0"
     },
     "elm-version": "0.15.1 <= v < 0.16.0"
 }
