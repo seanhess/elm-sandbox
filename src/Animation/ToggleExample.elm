@@ -7,11 +7,29 @@ import Animation exposing (animation, from, to, duration, delay, Animation, stat
 import Time exposing (Time, second)
 import Effects exposing (Effects, Never)
 import Task exposing (Task)
+import List
+import String
 
 
 --------------------------------------------------------------------
 
-type alias Transition = {}
+type alias Transition = List Animation
+
+none = []
+
+addTransition : Animation -> Transition -> Transition
+addTransition a ts = a :: ts
+
+cleanup : Time -> Transition -> Transition
+cleanup time ts = List.filter (not << Animation.isDone time) ts
+
+transitionValue : Time -> Transition -> Float
+transitionValue time trans =
+  List.map (animate time) trans
+    |> List.sum
+
+dump : Time -> Transition -> String
+dump time ts = toString <| List.map (animate time) ts
 
 --------------------------------------------------------------------
 
@@ -19,18 +37,14 @@ type PageState = Open | Closed
 type alias Model =
   { state : PageState
   , time : Time
-
-  -- not maybe, just initialize it?
   , transition : Transition
-  , animation : Animation
   }
 
 init : ( Model, Effects Action )
 init =
   ( { state = Closed
-    , transition = {}
+    , transition = none
     , time = 0
-    , animation = static 0.0
     }
   , Effects.tick Tick )
 
@@ -47,16 +61,22 @@ update action model =
     Toggle ->
       let model' = case model.state of
         Open ->
-          { model | state <- Closed, animation <- anim model.time maxWidth }
+          { model
+            | state <- Closed
+            , transition <- addTransition ( anim model.time maxWidth) model.transition
+          }
 
         Closed ->
-          { model | state <- Open, animation <- anim model.time -maxWidth }
+          { model
+            | state <- Open
+            , transition <- addTransition ( anim model.time -maxWidth ) model.transition
+          }
       in
       ( model'
       , Effects.none )
 
     Tick t ->
-      ( { model | time <- t }
+      ( { model | time <- t, transition <- cleanup model.time model.transition }
       , Effects.tick Tick )
 
 anim : Time -> Float -> Animation
@@ -90,14 +110,20 @@ view address model =
         []
     , div
         []
-        [ pre [] [ text ("time: " ++ toString (round (model.time / 1000))) ] ]
+        [ pre []
+            [ text <| String.join "\n"
+                [ "time: " ++ toString (round (model.time / 1000))
+                , "trans: " ++ toString (List.length model.transition) ++ " " ++ dump model.time model.transition
+                ]
+            ]
+        ]
     ]
 
 maxWidth = 200.0
 
 boxWidth : Model -> Float
 boxWidth m =
-  let a = animate m.time m.animation in
+  let a = transitionValue m.time m.transition in
   case m.state of
     Open -> maxWidth + a
     Closed -> 0.0 + a
