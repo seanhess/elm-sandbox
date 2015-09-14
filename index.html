@@ -2,21 +2,27 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Apocalyptica</title>
-    <script src="build/Main.js"></script>
-    <script src="resources/PointerLock.js"></script>
-    <link rel="stylesheet" type="text/css" href="apocalyptica.css"/>
+    <title>Trending Topics</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="Description" content="">
-    <link rel="icon" type="image/png" href="images/favicon.ico">
+    <style>html, head, body { padding:0; margin:0; }
+    body { font-family: calibri, helvetica, arial, sans-serif; }
+    a:link { text-decoration: none; color: rgb(15,102,230); }
+    a:visited { text-decoration: none; }
+    a:active { text-decoration: none; }
+    a:hover { text-decoration: underline; color: rgb(234,21,122); }
+    html,body { height: 100%; margin: 0px; }
+    </style>
   </head>
-
   <body>
+    <script type="text/javascript" src="../elm.js"></script>
+    <script>
+      var moduleName = window.location.hash.replace('#','').split(".") || ["Main"]
 
+      var module = moduleName.reduce(function(mod, name) {
+        return mod[name]
+      }, Elm)
+
+      Elm.fullscreen(module)
+    </script>
   </body>
-
-  <script type="text/javascript" src="vendor.js"></script>
-  <script type="text/javascript" src="App.js"></script>
-  <script type="text/javascript" src="bootstrap-elm.js"></script>
-
 </html>

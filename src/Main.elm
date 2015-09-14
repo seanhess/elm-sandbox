@@ -2,6 +2,8 @@ import Html exposing (Html)
 import Signal exposing (Signal, Address)
 import Effects exposing (Never)
 
+import Animation.ToggleExample
+
 import Topics.TopicList exposing (init, update, view, Model, Action)
 --import Square.SpinSquare exposing (init, update, view, Model, Action)
 import StartApp exposing (App, Config)

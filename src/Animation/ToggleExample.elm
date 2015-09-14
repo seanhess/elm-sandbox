@@ -1,3 +1,5 @@
+module Animation.ToggleExample where
+
 import Html exposing (div, button, text, Html, pre)
 import Html.Attributes exposing (style)
 import Html.Events exposing (onClick)
@@ -9,7 +11,6 @@ import Effects exposing (Effects, Never)
 import Task exposing (Task)
 import List
 import String
-
 
 --------------------------------------------------------------------
 
