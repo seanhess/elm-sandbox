@@ -461,24 +461,25 @@ Elm.Animation.make = function (_elm) {
    return _elm.Animation.values;
 };
 Elm.Animation = Elm.Animation || {};
-Elm.Animation.ListExample = Elm.Animation.ListExample || {};
-Elm.Animation.ListExample.make = function (_elm) {
+Elm.Animation.ClickExample = Elm.Animation.ClickExample || {};
+Elm.Animation.ClickExample.make = function (_elm) {
    "use strict";
    _elm.Animation = _elm.Animation || {};
-   _elm.Animation.ListExample = _elm.Animation.ListExample || {};
-   if (_elm.Animation.ListExample.values)
-   return _elm.Animation.ListExample.values;
+   _elm.Animation.ClickExample = _elm.Animation.ClickExample || {};
+   if (_elm.Animation.ClickExample.values)
+   return _elm.Animation.ClickExample.values;
    var _op = {},
    _N = Elm.Native,
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
-   $moduleName = "Animation.ListExample",
-   $Animation = Elm.Animation.make(_elm),
+   $moduleName = "Animation.ClickExample",
+   $Animation$Transition = Elm.Animation.Transition.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $Effects = Elm.Effects.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
@@ -487,315 +488,188 @@ Elm.Animation.ListExample.make = function (_elm) {
    $String = Elm.String.make(_elm),
    $Task = Elm.Task.make(_elm),
    $Time = Elm.Time.make(_elm);
-   var buttonStyle = function (isSelected) {
+   var buttonStyle = _L.fromArray([{ctor: "_Tuple2"
+                                   ,_0: "color"
+                                   ,_1: "#555"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "text-transform"
+                                   ,_1: "uppercase"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "cursor"
+                                   ,_1: "pointer"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "letter-spacing"
+                                   ,_1: "0.15em"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "padding"
+                                   ,_1: "8px"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "border"
+                                   ,_1: "solid 2px #555"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "background"
+                                   ,_1: "white"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "borderRadius"
+                                   ,_1: "6px"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "fontWeight"
+                                   ,_1: "bold"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "font"
+                                   ,_1: "11px \'HelveticaNeue\'"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "outline"
+                                   ,_1: "none"}]);
+   var boxSize = 40;
+   var box = function (model) {
       return function () {
-         var highlight = isSelected ? _L.fromArray([{ctor: "_Tuple2"
-                                                    ,_0: "borderBottomWidth"
-                                                    ,_1: "4px"}
-                                                   ,{ctor: "_Tuple2"
-                                                    ,_0: "background"
-                                                    ,_1: "#FFF6D6"}]) : _L.fromArray([]);
-         return A2($Basics._op["++"],
-         _L.fromArray([{ctor: "_Tuple2"
-                       ,_0: "color"
-                       ,_1: "#555"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "text-transform"
-                       ,_1: "uppercase"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "cursor"
-                       ,_1: "pointer"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "letter-spacing"
-                       ,_1: "0.15em"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "padding"
-                       ,_1: "8px"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "border"
-                       ,_1: "solid 2px #555"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "background"
-                       ,_1: "white"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "borderRadius"
-                       ,_1: "6px"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "fontWeight"
-                       ,_1: "bold"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "font"
-                       ,_1: "11px \'HelveticaNeue\'"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "outline"
-                       ,_1: "none"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "marginRight"
-                       ,_1: "10px"}]),
-         highlight);
-      }();
-   };
-   var maxWidth = 200.0;
-   var itemY = function (pos) {
-      return $Basics.toFloat(pos) * 50.0;
-   };
-   var ItemTick = function (a) {
-      return {ctor: "ItemTick"
-             ,_0: a};
-   };
-   var ItemModel = F3(function (a,
-   b,
-   c) {
-      return {_: {}
-             ,item: a
-             ,position: c
-             ,transition: b};
-   });
-   var sortItems = F2(function (order,
-   items) {
-      return function () {
-         switch (order.ctor)
-         {case "SortId":
-            return A2($List.sortBy,
-              function ($) {
-                 return function (_) {
-                    return _.id;
-                 }(function (_) {
-                    return _.item;
-                 }($));
-              },
-              items);
-            case "SortName":
-            return A2($List.sortBy,
-              function ($) {
-                 return function (_) {
-                    return _.name;
-                 }(function (_) {
-                    return _.item;
-                 }($));
-              },
-              items);}
-         _U.badCase($moduleName,
-         "between lines 99 and 101");
-      }();
-   });
-   var Tick = function (a) {
-      return {ctor: "Tick",_0: a};
-   };
-   var Sort = function (a) {
-      return {ctor: "Sort",_0: a};
-   };
-   var Model = F2(function (a,b) {
-      return {_: {}
-             ,items: b
-             ,sort: a};
-   });
-   var Item = F2(function (a,b) {
-      return {_: {},id: a,name: b};
-   });
-   var SortId = {ctor: "SortId"};
-   var SortName = {ctor: "SortName"};
-   var Closed = {ctor: "Closed"};
-   var Open = {ctor: "Open"};
-   var anim = F2(function (t,s) {
-      return $Animation.duration(0.8 * $Time.second)($Animation.to(0)($Animation.from(s)($Animation.animation(t))));
-   });
-   var dump = function (trans) {
-      return A2($String.join,
-      "\n",
-      _L.fromArray([A2($Basics._op["++"],
-                   "time: ",
-                   $Basics.toString($Basics.round(trans.time / 1000)))
-                   ,A2($Basics._op["++"],
-                   "num: ",
-                   $Basics.toString($List.length(trans.animations)))
-                   ,$Basics.toString(A2($List.map,
-                   $Animation.animate(trans.time),
-                   trans.animations))]));
-   };
-   var value = function (trans) {
-      return $List.sum(A2($List.map,
-      $Animation.animate(trans.time),
-      trans.animations));
-   };
-   var itemView = F2(function (address,
-   model) {
-      return function () {
-         var y = itemY(model.position) + value(model.transition);
+         var left = model.position.x - boxSize / 2 + A2($Animation$Transition.animate,
+         model.time,
+         model.transX);
+         var top = model.position.y - boxSize / 2 + A2($Animation$Transition.animate,
+         model.time,
+         model.transY);
          return A2($Html.div,
          _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
                                                             ,_0: "background"
-                                                            ,_1: "#E6E6EF"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "border"
-                                                            ,_1: "solid 1px #716DCF"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "borderRightWidth"
-                                                            ,_1: "10px"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "borderLeftWidth"
-                                                            ,_1: "0px"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "borderTopWidth"
-                                                            ,_1: "0px"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "margin"
-                                                            ,_1: "10px"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "marginLeft"
-                                                            ,_1: "0px"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "padding"
-                                                            ,_1: "10px"}
+                                                            ,_1: "#716DCF"}
                                                            ,{ctor: "_Tuple2"
                                                             ,_0: "width"
-                                                            ,_1: "320px"}
+                                                            ,_1: "40px"}
                                                            ,{ctor: "_Tuple2"
-                                                            ,_0: "position"
-                                                            ,_1: "absolute"}
+                                                            ,_0: "height"
+                                                            ,_1: "40px"}
                                                            ,{ctor: "_Tuple2"
                                                             ,_0: "top"
                                                             ,_1: A2($Basics._op["++"],
-                                                            $Basics.toString(y),
-                                                            "px")}]))]),
-         _L.fromArray([$Html.text(model.item.name)]));
+                                                            $Basics.toString(top),
+                                                            "px")}
+                                                           ,{ctor: "_Tuple2"
+                                                            ,_0: "left"
+                                                            ,_1: A2($Basics._op["++"],
+                                                            $Basics.toString(left),
+                                                            "px")}
+                                                           ,{ctor: "_Tuple2"
+                                                            ,_0: "position"
+                                                            ,_1: "absolute"}]))]),
+         _L.fromArray([]));
       }();
-   });
-   var view = F2(function (address,
-   model) {
-      return A2($Html.div,
-      _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
-                                                         ,_0: "margin"
-                                                         ,_1: "10px"}]))]),
-      _L.fromArray([A2($Html.div,
-                   _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
-                                                                      ,_0: "margin-bottom"
-                                                                      ,_1: "10px"}]))]),
-                   _L.fromArray([A2($Html.button,
-                                _L.fromArray([$Html$Attributes.style(buttonStyle(_U.eq(model.sort,
-                                             SortName)))
-                                             ,A2($Html$Events.onClick,
-                                             address,
-                                             Sort(SortName))]),
-                                _L.fromArray([$Html.text("Sort Name")]))
-                                ,A2($Html.button,
-                                _L.fromArray([$Html$Attributes.style(buttonStyle(_U.eq(model.sort,
-                                             SortId)))
-                                             ,A2($Html$Events.onClick,
-                                             address,
-                                             Sort(SortId))]),
-                                _L.fromArray([$Html.text("Sort Id")]))]))
-                   ,A2($Html.div,
-                   _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
-                                                                      ,_0: "position"
-                                                                      ,_1: "relative"}]))]),
-                   A2($List.map,
-                   itemView(address),
-                   model.items))]));
-   });
-   var tick = F2(function (time,
-   trans) {
-      return function () {
-         var anims = A2($List.filter,
-         function ($) {
-            return $Basics.not($Animation.isDone(time)($));
-         },
-         trans.animations);
-         return _U.replace([["animations"
-                            ,anims]
-                           ,["time",time]],
-         trans);
-      }();
-   });
-   var updateItem = F2(function (action,
-   model) {
-      return function () {
-         switch (action.ctor)
-         {case "ItemTick":
-            return _U.replace([["transition"
-                               ,A2(tick,
-                               action._0,
-                               model.transition)]],
-              model);}
-         _U.badCase($moduleName,
-         "between lines 149 and 151");
-      }();
-   });
-   var add = F2(function (a,
-   trans) {
-      return _U.replace([["animations"
-                         ,A2($List._op["::"],
-                         a,
-                         trans.animations)]],
-      trans);
-   });
-   var updatePosition = F2(function (pos,
-   model) {
-      return function () {
-         var dy = itemY(model.position) - itemY(pos);
-         return _U.replace([["position"
-                            ,pos]
-                           ,["transition"
-                            ,A2(add,
-                            A2(anim,
-                            model.transition.time,
-                            dy),
-                            model.transition)]],
-         model);
-      }();
-   });
+   };
+   var Click = function (a) {
+      return {ctor: "Click",_0: a};
+   };
+   var Tick = function (a) {
+      return {ctor: "Tick",_0: a};
+   };
    var update = F2(function (action,
    model) {
       return function () {
          switch (action.ctor)
-         {case "Sort":
+         {case "Click":
             return function () {
-                 var items = $List.indexedMap(updatePosition)(A2(sortItems,
-                 action._0,
-                 model.items));
+                 var dy = model.position.y - action._0.y;
+                 var transY = A2($Animation$Transition.add,
+                 A2($Animation$Transition.additive,
+                 model.time,
+                 dy),
+                 model.transY);
+                 var dx = model.position.x - action._0.x;
+                 var transX = A2($Animation$Transition.add,
+                 A2($Animation$Transition.additive,
+                 model.time,
+                 dx),
+                 model.transX);
                  return {ctor: "_Tuple2"
-                        ,_0: _U.replace([["sort"
+                        ,_0: _U.replace([["position"
                                          ,action._0]
-                                        ,["items",items]],
+                                        ,["transX",transX]
+                                        ,["transY",transY]],
                         model)
                         ,_1: $Effects.none};
               }();
             case "Tick":
-            return function () {
-                 var items = A2($List.map,
-                 updateItem(ItemTick(action._0)),
-                 model.items);
-                 return {ctor: "_Tuple2"
-                        ,_0: _U.replace([["items"
-                                         ,items]],
-                        model)
-                        ,_1: $Effects.tick(Tick)};
-              }();}
+            return {ctor: "_Tuple2"
+                   ,_0: _U.replace([["time"
+                                    ,action._0]],
+                   model)
+                   ,_1: $Effects.tick(Tick)};}
          _U.badCase($moduleName,
-         "between lines 81 and 93");
+         "between lines 52 and 64");
       }();
    });
-   var none = {_: {}
-              ,animations: _L.fromArray([])
-              ,time: 0};
-   var itemModel = F2(function (pos,
-   item) {
-      return {_: {}
-             ,item: item
-             ,position: pos
-             ,transition: none};
+   var Position = F2(function (a,
+   b) {
+      return {_: {},x: a,y: b};
    });
+   var clickPosition = A3($Json$Decode.object2,
+   Position,
+   A2($Json$Decode._op[":="],
+   "clientX",
+   $Json$Decode.$float),
+   A2($Json$Decode._op[":="],
+   "clientY",
+   $Json$Decode.$float));
+   var view = F2(function (address,
+   model) {
+      return A2($Html.div,
+      _L.fromArray([$Html$Attributes.style(_L.fromArray([]))]),
+      _L.fromArray([A2($Html.div,
+                   _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                                      ,_0: "width"
+                                                                      ,_1: "400px"}
+                                                                     ,{ctor: "_Tuple2"
+                                                                      ,_0: "height"
+                                                                      ,_1: "400px"}
+                                                                     ,{ctor: "_Tuple2"
+                                                                      ,_0: "background"
+                                                                      ,_1: "#E6E6EF"}
+                                                                     ,{ctor: "_Tuple2"
+                                                                      ,_0: "position"
+                                                                      ,_1: "relative"}
+                                                                     ,{ctor: "_Tuple2"
+                                                                      ,_0: "overflow"
+                                                                      ,_1: "hidden"}]))
+                                ,A3($Html$Events.on,
+                                "click",
+                                clickPosition,
+                                function ($) {
+                                   return $Signal.message(address)(Click($));
+                                })]),
+                   _L.fromArray([box(model)]))
+                   ,A2($Html.p,
+                   _L.fromArray([]),
+                   _L.fromArray([$Html.text("Click anywhere in the box")]))
+                   ,A2($Html.div,
+                   _L.fromArray([]),
+                   _L.fromArray([A2($Html.pre,
+                   _L.fromArray([]),
+                   _L.fromArray([$Html.text(A2($String.join,
+                   "\n",
+                   _L.fromArray([A2($Basics._op["++"],
+                   "time: ",
+                   $Basics.toString($Basics.round(model.time / 1000)))])))]))]))]));
+   });
+   var Model = F5(function (a,
+   b,
+   c,
+   d,
+   e) {
+      return {_: {}
+             ,position: e
+             ,state: a
+             ,time: b
+             ,transX: c
+             ,transY: d};
+   });
+   var Closed = {ctor: "Closed"};
    var init = {ctor: "_Tuple2"
               ,_0: {_: {}
-                   ,items: A2($List.indexedMap,
-                   itemModel,
-                   _L.fromArray([A2(Item,1,"one")
-                                ,A2(Item,2,"two")
-                                ,A2(Item,3,"three")
-                                ,A2(Item,4,"four")
-                                ,A2(Item,5,"five")
-                                ,A2(Item,6,"six")]))
-                   ,sort: SortId}
+                   ,position: A2(Position,10,10)
+                   ,state: Closed
+                   ,time: 0
+                   ,transX: $Animation$Transition.none
+                   ,transY: $Animation$Transition.none}
               ,_1: $Effects.tick(Tick)};
    var app = $StartApp.start({_: {}
                              ,init: init
@@ -805,44 +679,75 @@ Elm.Animation.ListExample.make = function (_elm) {
    var main = app.html;
    var tasks = Elm.Native.Task.make(_elm).performSignal("tasks",
    app.tasks);
-   var Transition = F2(function (a,
-   b) {
-      return {_: {}
-             ,animations: a
-             ,time: b};
+   var Open = {ctor: "Open"};
+   _elm.Animation.ClickExample.values = {_op: _op
+                                        ,Open: Open
+                                        ,Closed: Closed
+                                        ,Model: Model
+                                        ,Position: Position
+                                        ,init: init
+                                        ,Tick: Tick
+                                        ,Click: Click
+                                        ,update: update
+                                        ,view: view
+                                        ,boxSize: boxSize
+                                        ,box: box
+                                        ,buttonStyle: buttonStyle
+                                        ,app: app
+                                        ,main: main
+                                        ,clickPosition: clickPosition};
+   return _elm.Animation.ClickExample.values;
+};
+Elm.Animation = Elm.Animation || {};
+Elm.Animation.Transition = Elm.Animation.Transition || {};
+Elm.Animation.Transition.make = function (_elm) {
+   "use strict";
+   _elm.Animation = _elm.Animation || {};
+   _elm.Animation.Transition = _elm.Animation.Transition || {};
+   if (_elm.Animation.Transition.values)
+   return _elm.Animation.Transition.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Animation.Transition",
+   $Animation = Elm.Animation.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var additive = F2(function (t,
+   fromValue) {
+      return $Animation.to(0)($Animation.from(fromValue)($Animation.animation(t)));
    });
-   _elm.Animation.ListExample.values = {_op: _op
-                                       ,Transition: Transition
-                                       ,none: none
-                                       ,add: add
-                                       ,tick: tick
-                                       ,value: value
-                                       ,dump: dump
-                                       ,anim: anim
-                                       ,Open: Open
-                                       ,Closed: Closed
-                                       ,SortName: SortName
-                                       ,SortId: SortId
-                                       ,Item: Item
-                                       ,Model: Model
-                                       ,init: init
-                                       ,Sort: Sort
-                                       ,Tick: Tick
-                                       ,update: update
-                                       ,sortItems: sortItems
-                                       ,view: view
-                                       ,ItemModel: ItemModel
-                                       ,itemModel: itemModel
-                                       ,updatePosition: updatePosition
-                                       ,ItemTick: ItemTick
-                                       ,updateItem: updateItem
-                                       ,itemY: itemY
-                                       ,itemView: itemView
-                                       ,maxWidth: maxWidth
-                                       ,buttonStyle: buttonStyle
-                                       ,app: app
-                                       ,main: main};
-   return _elm.Animation.ListExample.values;
+   var dump = F2(function (time,
+   trans) {
+      return $Basics.toString(A2($List.map,
+      $Animation.animate(time),
+      trans));
+   });
+   var animate = F2(function (time,
+   anims) {
+      return $List.sum(A2($List.map,
+      $Animation.animate(time),
+      anims));
+   });
+   var add = F2(function (a,
+   trans) {
+      return A2($List._op["::"],
+      a,
+      trans);
+   });
+   var none = _L.fromArray([]);
+   _elm.Animation.Transition.values = {_op: _op
+                                      ,none: none
+                                      ,add: add
+                                      ,animate: animate
+                                      ,dump: dump
+                                      ,additive: additive};
+   return _elm.Animation.Transition.values;
 };
 Elm.Array = Elm.Array || {};
 Elm.Array.make = function (_elm) {

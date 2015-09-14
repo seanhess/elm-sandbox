@@ -461,18 +461,18 @@ Elm.Animation.make = function (_elm) {
    return _elm.Animation.values;
 };
 Elm.Animation = Elm.Animation || {};
-Elm.Animation.ListExample = Elm.Animation.ListExample || {};
-Elm.Animation.ListExample.make = function (_elm) {
+Elm.Animation.ToggleExample = Elm.Animation.ToggleExample || {};
+Elm.Animation.ToggleExample.make = function (_elm) {
    "use strict";
    _elm.Animation = _elm.Animation || {};
-   _elm.Animation.ListExample = _elm.Animation.ListExample || {};
-   if (_elm.Animation.ListExample.values)
-   return _elm.Animation.ListExample.values;
+   _elm.Animation.ToggleExample = _elm.Animation.ToggleExample || {};
+   if (_elm.Animation.ToggleExample.values)
+   return _elm.Animation.ToggleExample.values;
    var _op = {},
    _N = Elm.Native,
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
-   $moduleName = "Animation.ListExample",
+   $moduleName = "Animation.ToggleExample",
    $Animation = Elm.Animation.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $Effects = Elm.Effects.make(_elm),
@@ -487,180 +487,85 @@ Elm.Animation.ListExample.make = function (_elm) {
    $String = Elm.String.make(_elm),
    $Task = Elm.Task.make(_elm),
    $Time = Elm.Time.make(_elm);
-   var buttonStyle = function (isSelected) {
-      return function () {
-         var highlight = isSelected ? _L.fromArray([{ctor: "_Tuple2"
-                                                    ,_0: "borderBottomWidth"
-                                                    ,_1: "4px"}
-                                                   ,{ctor: "_Tuple2"
-                                                    ,_0: "background"
-                                                    ,_1: "#FFF6D6"}]) : _L.fromArray([]);
-         return A2($Basics._op["++"],
-         _L.fromArray([{ctor: "_Tuple2"
-                       ,_0: "color"
-                       ,_1: "#555"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "text-transform"
-                       ,_1: "uppercase"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "cursor"
-                       ,_1: "pointer"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "letter-spacing"
-                       ,_1: "0.15em"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "padding"
-                       ,_1: "8px"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "border"
-                       ,_1: "solid 2px #555"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "background"
-                       ,_1: "white"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "borderRadius"
-                       ,_1: "6px"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "fontWeight"
-                       ,_1: "bold"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "font"
-                       ,_1: "11px \'HelveticaNeue\'"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "outline"
-                       ,_1: "none"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "marginRight"
-                       ,_1: "10px"}]),
-         highlight);
-      }();
-   };
+   var buttonStyle = _L.fromArray([{ctor: "_Tuple2"
+                                   ,_0: "color"
+                                   ,_1: "#555"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "text-transform"
+                                   ,_1: "uppercase"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "cursor"
+                                   ,_1: "pointer"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "letter-spacing"
+                                   ,_1: "0.15em"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "padding"
+                                   ,_1: "8px"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "border"
+                                   ,_1: "solid 2px #555"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "background"
+                                   ,_1: "white"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "borderRadius"
+                                   ,_1: "6px"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "fontWeight"
+                                   ,_1: "bold"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "font"
+                                   ,_1: "11px \'HelveticaNeue\'"}
+                                  ,{ctor: "_Tuple2"
+                                   ,_0: "outline"
+                                   ,_1: "none"}]);
    var maxWidth = 200.0;
-   var itemY = function (pos) {
-      return $Basics.toFloat(pos) * 50.0;
-   };
-   var ItemTick = function (a) {
-      return {ctor: "ItemTick"
-             ,_0: a};
-   };
-   var ItemModel = F3(function (a,
-   b,
-   c) {
-      return {_: {}
-             ,item: a
-             ,position: c
-             ,transition: b};
-   });
-   var sortItems = F2(function (order,
-   items) {
-      return function () {
-         switch (order.ctor)
-         {case "SortId":
-            return A2($List.sortBy,
-              function ($) {
-                 return function (_) {
-                    return _.id;
-                 }(function (_) {
-                    return _.item;
-                 }($));
-              },
-              items);
-            case "SortName":
-            return A2($List.sortBy,
-              function ($) {
-                 return function (_) {
-                    return _.name;
-                 }(function (_) {
-                    return _.item;
-                 }($));
-              },
-              items);}
-         _U.badCase($moduleName,
-         "between lines 99 and 101");
-      }();
-   });
    var Tick = function (a) {
       return {ctor: "Tick",_0: a};
    };
-   var Sort = function (a) {
-      return {ctor: "Sort",_0: a};
-   };
-   var Model = F2(function (a,b) {
+   var Toggle = {ctor: "Toggle"};
+   var Model = F3(function (a,
+   b,
+   c) {
       return {_: {}
-             ,items: b
-             ,sort: a};
+             ,state: a
+             ,time: b
+             ,transition: c};
    });
-   var Item = F2(function (a,b) {
-      return {_: {},id: a,name: b};
-   });
-   var SortId = {ctor: "SortId"};
-   var SortName = {ctor: "SortName"};
    var Closed = {ctor: "Closed"};
    var Open = {ctor: "Open"};
    var anim = F2(function (t,s) {
       return $Animation.duration(0.8 * $Time.second)($Animation.to(0)($Animation.from(s)($Animation.animation(t))));
    });
-   var dump = function (trans) {
-      return A2($String.join,
-      "\n",
-      _L.fromArray([A2($Basics._op["++"],
-                   "time: ",
-                   $Basics.toString($Basics.round(trans.time / 1000)))
-                   ,A2($Basics._op["++"],
-                   "num: ",
-                   $Basics.toString($List.length(trans.animations)))
-                   ,$Basics.toString(A2($List.map,
-                   $Animation.animate(trans.time),
-                   trans.animations))]));
-   };
-   var value = function (trans) {
-      return $List.sum(A2($List.map,
-      $Animation.animate(trans.time),
+   var dump = F2(function (time,
+   trans) {
+      return $Basics.toString(A2($List.map,
+      $Animation.animate(time),
       trans.animations));
-   };
-   var itemView = F2(function (address,
-   model) {
-      return function () {
-         var y = itemY(model.position) + value(model.transition);
-         return A2($Html.div,
-         _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
-                                                            ,_0: "background"
-                                                            ,_1: "#E6E6EF"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "border"
-                                                            ,_1: "solid 1px #716DCF"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "borderRightWidth"
-                                                            ,_1: "10px"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "borderLeftWidth"
-                                                            ,_1: "0px"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "borderTopWidth"
-                                                            ,_1: "0px"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "margin"
-                                                            ,_1: "10px"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "marginLeft"
-                                                            ,_1: "0px"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "padding"
-                                                            ,_1: "10px"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "width"
-                                                            ,_1: "320px"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "position"
-                                                            ,_1: "absolute"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "top"
-                                                            ,_1: A2($Basics._op["++"],
-                                                            $Basics.toString(y),
-                                                            "px")}]))]),
-         _L.fromArray([$Html.text(model.item.name)]));
-      }();
    });
+   var transitionValue = F2(function (time,
+   trans) {
+      return $List.sum(A2($List.map,
+      $Animation.animate(time),
+      trans.animations));
+   });
+   var boxWidth = function (m) {
+      return function () {
+         var a = A2(transitionValue,
+         m.time,
+         m.transition);
+         return function () {
+            var _v0 = m.state;
+            switch (_v0.ctor)
+            {case "Closed": return 0.0 + a;
+               case "Open":
+               return maxWidth + a;}
+            _U.badCase($moduleName,
+            "between lines 134 and 136");
+         }();
+      }();
+   };
    var view = F2(function (address,
    model) {
       return A2($Html.div,
@@ -672,26 +577,45 @@ Elm.Animation.ListExample.make = function (_elm) {
                                                                       ,_0: "margin-bottom"
                                                                       ,_1: "10px"}]))]),
                    _L.fromArray([A2($Html.button,
-                                _L.fromArray([$Html$Attributes.style(buttonStyle(_U.eq(model.sort,
-                                             SortName)))
-                                             ,A2($Html$Events.onClick,
-                                             address,
-                                             Sort(SortName))]),
-                                _L.fromArray([$Html.text("Sort Name")]))
-                                ,A2($Html.button,
-                                _L.fromArray([$Html$Attributes.style(buttonStyle(_U.eq(model.sort,
-                                             SortId)))
-                                             ,A2($Html$Events.onClick,
-                                             address,
-                                             Sort(SortId))]),
-                                _L.fromArray([$Html.text("Sort Id")]))]))
+                   _L.fromArray([$Html$Attributes.style(buttonStyle)
+                                ,A2($Html$Events.onClick,
+                                address,
+                                Toggle)]),
+                   _L.fromArray([$Html.text("Toggle")]))]))
                    ,A2($Html.div,
                    _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
-                                                                      ,_0: "position"
-                                                                      ,_1: "relative"}]))]),
-                   A2($List.map,
-                   itemView(address),
-                   model.items))]));
+                                                                      ,_0: "width"
+                                                                      ,_1: A2($Basics._op["++"],
+                                                                      $Basics.toString(boxWidth(model)),
+                                                                      "px")}
+                                                                     ,{ctor: "_Tuple2"
+                                                                      ,_0: "height"
+                                                                      ,_1: "150px"}
+                                                                     ,{ctor: "_Tuple2"
+                                                                      ,_0: "background"
+                                                                      ,_1: "#E6E6EF"}
+                                                                     ,{ctor: "_Tuple2"
+                                                                      ,_0: "border-right"
+                                                                      ,_1: "solid 10px #716DCF"}]))]),
+                   _L.fromArray([]))
+                   ,A2($Html.div,
+                   _L.fromArray([]),
+                   _L.fromArray([A2($Html.pre,
+                   _L.fromArray([]),
+                   _L.fromArray([$Html.text(A2($String.join,
+                   "\n",
+                   _L.fromArray([A2($Basics._op["++"],
+                                "time: ",
+                                $Basics.toString($Basics.round(model.time / 1000)))
+                                ,A2($Basics._op["++"],
+                                "trans: ",
+                                A2($Basics._op["++"],
+                                $Basics.toString($List.length(model.transition.animations)),
+                                A2($Basics._op["++"],
+                                " ",
+                                A2(dump,
+                                model.time,
+                                model.transition))))])))]))]))]));
    });
    var tick = F2(function (time,
    trans) {
@@ -707,20 +631,6 @@ Elm.Animation.ListExample.make = function (_elm) {
          trans);
       }();
    });
-   var updateItem = F2(function (action,
-   model) {
-      return function () {
-         switch (action.ctor)
-         {case "ItemTick":
-            return _U.replace([["transition"
-                               ,A2(tick,
-                               action._0,
-                               model.transition)]],
-              model);}
-         _U.badCase($moduleName,
-         "between lines 149 and 151");
-      }();
-   });
    var add = F2(function (a,
    trans) {
       return _U.replace([["animations"
@@ -729,73 +639,62 @@ Elm.Animation.ListExample.make = function (_elm) {
                          trans.animations)]],
       trans);
    });
-   var updatePosition = F2(function (pos,
-   model) {
-      return function () {
-         var dy = itemY(model.position) - itemY(pos);
-         return _U.replace([["position"
-                            ,pos]
-                           ,["transition"
-                            ,A2(add,
-                            A2(anim,
-                            model.transition.time,
-                            dy),
-                            model.transition)]],
-         model);
-      }();
-   });
    var update = F2(function (action,
    model) {
       return function () {
          switch (action.ctor)
-         {case "Sort":
+         {case "Tick":
+            return {ctor: "_Tuple2"
+                   ,_0: _U.replace([["time"
+                                    ,action._0]
+                                   ,["transition"
+                                    ,A2(tick,
+                                    model.time,
+                                    model.transition)]],
+                   model)
+                   ,_1: $Effects.tick(Tick)};
+            case "Toggle":
             return function () {
-                 var items = $List.indexedMap(updatePosition)(A2(sortItems,
-                 action._0,
-                 model.items));
+                 var model$ = function () {
+                    var _v3 = model.state;
+                    switch (_v3.ctor)
+                    {case "Closed":
+                       return _U.replace([["state"
+                                          ,Open]
+                                         ,["transition"
+                                          ,A2(add,
+                                          A2(anim,
+                                          model.time,
+                                          0 - maxWidth),
+                                          model.transition)]],
+                         model);
+                       case "Open":
+                       return _U.replace([["state"
+                                          ,Closed]
+                                         ,["transition"
+                                          ,A2(add,
+                                          A2(anim,model.time,maxWidth),
+                                          model.transition)]],
+                         model);}
+                    _U.badCase($moduleName,
+                    "between lines 78 and 90");
+                 }();
                  return {ctor: "_Tuple2"
-                        ,_0: _U.replace([["sort"
-                                         ,action._0]
-                                        ,["items",items]],
-                        model)
+                        ,_0: model$
                         ,_1: $Effects.none};
-              }();
-            case "Tick":
-            return function () {
-                 var items = A2($List.map,
-                 updateItem(ItemTick(action._0)),
-                 model.items);
-                 return {ctor: "_Tuple2"
-                        ,_0: _U.replace([["items"
-                                         ,items]],
-                        model)
-                        ,_1: $Effects.tick(Tick)};
               }();}
          _U.badCase($moduleName,
-         "between lines 81 and 93");
+         "between lines 76 and 96");
       }();
    });
    var none = {_: {}
               ,animations: _L.fromArray([])
               ,time: 0};
-   var itemModel = F2(function (pos,
-   item) {
-      return {_: {}
-             ,item: item
-             ,position: pos
-             ,transition: none};
-   });
    var init = {ctor: "_Tuple2"
               ,_0: {_: {}
-                   ,items: A2($List.indexedMap,
-                   itemModel,
-                   _L.fromArray([A2(Item,1,"one")
-                                ,A2(Item,2,"two")
-                                ,A2(Item,3,"three")
-                                ,A2(Item,4,"four")
-                                ,A2(Item,5,"five")
-                                ,A2(Item,6,"six")]))
-                   ,sort: SortId}
+                   ,state: Closed
+                   ,time: 0
+                   ,transition: none}
               ,_1: $Effects.tick(Tick)};
    var app = $StartApp.start({_: {}
                              ,init: init
@@ -811,38 +710,28 @@ Elm.Animation.ListExample.make = function (_elm) {
              ,animations: a
              ,time: b};
    });
-   _elm.Animation.ListExample.values = {_op: _op
-                                       ,Transition: Transition
-                                       ,none: none
-                                       ,add: add
-                                       ,tick: tick
-                                       ,value: value
-                                       ,dump: dump
-                                       ,anim: anim
-                                       ,Open: Open
-                                       ,Closed: Closed
-                                       ,SortName: SortName
-                                       ,SortId: SortId
-                                       ,Item: Item
-                                       ,Model: Model
-                                       ,init: init
-                                       ,Sort: Sort
-                                       ,Tick: Tick
-                                       ,update: update
-                                       ,sortItems: sortItems
-                                       ,view: view
-                                       ,ItemModel: ItemModel
-                                       ,itemModel: itemModel
-                                       ,updatePosition: updatePosition
-                                       ,ItemTick: ItemTick
-                                       ,updateItem: updateItem
-                                       ,itemY: itemY
-                                       ,itemView: itemView
-                                       ,maxWidth: maxWidth
-                                       ,buttonStyle: buttonStyle
-                                       ,app: app
-                                       ,main: main};
-   return _elm.Animation.ListExample.values;
+   _elm.Animation.ToggleExample.values = {_op: _op
+                                         ,Transition: Transition
+                                         ,none: none
+                                         ,add: add
+                                         ,tick: tick
+                                         ,transitionValue: transitionValue
+                                         ,dump: dump
+                                         ,anim: anim
+                                         ,Open: Open
+                                         ,Closed: Closed
+                                         ,Model: Model
+                                         ,init: init
+                                         ,Toggle: Toggle
+                                         ,Tick: Tick
+                                         ,update: update
+                                         ,view: view
+                                         ,maxWidth: maxWidth
+                                         ,boxWidth: boxWidth
+                                         ,buttonStyle: buttonStyle
+                                         ,app: app
+                                         ,main: main};
+   return _elm.Animation.ToggleExample.values;
 };
 Elm.Array = Elm.Array || {};
 Elm.Array.make = function (_elm) {
