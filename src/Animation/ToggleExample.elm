@@ -95,11 +95,6 @@ update action model =
       ( { model | time <- t, transition <- tick model.time model.transition }
       , Effects.tick Tick )
 
--- I need a timer in there
--- effects?
--- update is called every tiny second?
--- or only on a tick
-
 -----------------------------------------------------------------------------
 
 view : Address Action -> Model -> Html
