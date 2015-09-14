@@ -11,18 +11,31 @@
     a:active { text-decoration: none; }
     a:hover { text-decoration: underline; color: rgb(234,21,122); }
     html,body { height: 100%; margin: 0px; }
+    .hide { display : none }
     </style>
   </head>
   <body>
+
     <script type="text/javascript" src="elm.js"></script>
     <script>
-      var moduleName = window.location.hash.replace('#','').split(".") || ["Main"]
+      function load() {
+        var moduleName = window.location.hash.replace('#','').split(".") || ["Main"]
 
-      var module = moduleName.reduce(function(mod, name) {
-        return mod[name]
-      }, Elm)
+        try {
+          var module = moduleName.reduce(function(mod, name) {
+            return mod[name]
+          }, Elm)
+        }
+        catch (e) {}
 
-      Elm.fullscreen(module)
+        if (module) {
+          Elm.fullscreen(module)
+        }
+        else {
+          document.getElementById("links").classList.remove("hide")
+        }
+      }
+      load()
     </script>
   </body>
 </html>
