@@ -30,7 +30,7 @@ type alias Model =
 init : ( Model, Effects Action )
 init =
   ( { sort = SortId
-    , items = List.indexedMap itemModel [Item 1 "one", Item 2 "two", Item 3 "three", Item 4 "four", Item 5 "five", Item 6 "six"]
+    , items = List.map itemModel [Item 1 "one", Item 2 "two", Item 3 "three", Item 4 "four", Item 5 "five", Item 6 "six"]
     , newItemText = ""
     }
   , Effects.tick Tick )
@@ -47,11 +47,11 @@ update : Action -> Model -> (Model, Effects Action)
 update action model =
   case action of
     Sort order ->
-      -- for each one:
-      -- get the new position
-      let items = List.indexedMap updatePosition <| sortItems order model.items
-      in
-      ( { model | sort <- order, items <- items }
+      -- TODO calculate old sort position (old order)
+      -- TODO calculate new sort position (new order)
+      -- TODO calculate dy for each one
+
+      ( { model | sort <- order }
       , Effects.none )
 
     UpdateText txt ->
@@ -60,10 +60,10 @@ update action model =
 
     -- can't do this yet because I'm storing the list order
     -- no good. Everything has to be transitive
-    -- NewItem ->
+    NewItem ->
       -- let item = Item (nextId model.items) model.newItemText in
-      -- ( { model | newItemText <- "", items <- item :: model.items }
-      -- , Effects.none )
+      ( { model | newItemText <- "" }
+      , Effects.none )
 
     Tick t ->
       let items = List.map (updateTime t) model.items in
@@ -83,6 +83,7 @@ sortItems order items =
 
 view : Address Action -> Model -> Html
 view address model =
+  let sortedItems = sortItems model.sort model.items in
   div [ style [("margin", "10px")] ]
     [ p [] [ itemInput address model ]
     , div [ style [("margin-bottom", "10px")] ]
@@ -100,7 +101,7 @@ view address model =
         -- (List.map (\model -> pre [] [ text (dump model.transition) ]) model.items)
     , div
         [ style [("position", "relative")] ]
-        (List.map (itemView address) model.items)
+        (List.indexedMap (itemView address) sortedItems)
     ]
 
 itemInput : Address Action -> Model -> Html
@@ -127,19 +128,10 @@ itemInput address model =
 type alias ItemModel =
   { item : Item
   , transition : Transition
-  , position : Int
   }
 
-itemModel : Int -> Item -> ItemModel
-itemModel pos item = { item = item, position = pos, transition = none }
-
-updatePosition : Int -> ItemModel -> ItemModel
-updatePosition pos model =
-  let dy = itemY model.position - itemY pos in
-  { model
-    | position <- pos
-    , transition <- add (anim model.transition.time dy) model.transition
-  }
+itemModel : Item -> ItemModel
+itemModel item = { item = item, transition = none }
 
 updateTime : Time -> ItemModel -> ItemModel
 updateTime time model =
@@ -148,9 +140,9 @@ updateTime time model =
 itemY : Int -> Float
 itemY pos = toFloat pos * 50.0
 
-itemView : Address Action -> ItemModel -> Html
-itemView address model =
-  let y = itemY model.position + value model.transition in
+itemView : Address Action -> Int -> ItemModel -> Html
+itemView address pos model =
+  let y = itemY pos + value model.transition in
   div
     [ style (itemStyle y) ]
     [ text model.item.name ]
