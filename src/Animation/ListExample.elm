@@ -10,45 +10,10 @@ import Time exposing (Time, second)
 import Effects exposing (Effects, Never)
 import Task exposing (Task)
 import List
+import List.Extra as List
 import String
 import Debug
-
---------------------------------------------------------------------
-
-type alias Transition =
-  { animations : List Animation
-  , time : Time
-  }
-
-none = { animations = [], time = 0 }
-
-add : Animation -> Transition -> Transition
-add a trans = { trans | animations <- a :: trans.animations }
-
-tick : Time -> Transition -> Transition
-tick time trans =
-  let anims = List.filter (not << Animation.isDone time) trans.animations
-  in { trans | animations <- anims
-             , time <- time
-     }
-
-value : Transition -> Float
-value trans =
-  List.sum <| List.map (animate trans.time) trans.animations
-
-dump : Transition -> String
-dump trans =
-  String.join "\n"
-    [ "time: " ++ toString (round (trans.time / 1000))
-    , "num: " ++ toString (List.length trans.animations)
-    , toString <| List.map (animate trans.time) trans.animations
-    ]
-
-anim : Time -> Float -> Animation
-anim t s =
-  animation t |> from s |> to 0 |> duration (0.8 * second)
-
---------------------------------------------------------------------
+import Animation.Transition as Trans exposing (Transition, add, additive)
 
 type PageState = Open | Closed
 type SortOrder = SortName | SortId
@@ -61,12 +26,14 @@ type alias Item =
 type alias Model =
   { sort : SortOrder
   , items : List ItemModel
+  , time : Time
   }
 
 init : ( Model, Effects Action )
 init =
   ( { sort = SortId
-    , items = List.indexedMap itemModel [Item 1 "one", Item 2 "two", Item 3 "three", Item 4 "four", Item 5 "five", Item 6 "six"]
+    , items = List.map itemModel [Item 1 "one", Item 2 "two", Item 3 "three", Item 4 "four", Item 5 "five", Item 6 "six"]
+    , time = 0
     }
   , Effects.tick Tick )
 
@@ -80,28 +47,41 @@ update : Action -> Model -> (Model, Effects Action)
 update action model =
   case action of
     Sort order ->
-      -- for each one:
-      -- get the new position
-      let items = List.indexedMap updatePosition <| sortItems order model.items
+      let oldSort = sortItems model.sort model.items
+          newSort = sortItems order model.items
+          items =
+            -- f : Int -> ItemModel -> (Int -> ItemModel -> ItemModel)
+            -- List.map2 
+            -- List.indexedMap (updatePosition model.time) newSort
+            -- List.map2 (,) 
       in
-      ( { model | sort <- order, items <- items }
+      -- ok now I need to zip them all together!
+      ( { model | sort <- order }
       , Effects.none )
 
     Tick t ->
-      let items = List.map (updateItem (ItemTick t)) model.items in
-      ( { model | items <- items }
+      ( { model | time <- t }
       , Effects.tick Tick )
+
+-- indexedMap = (Int -> a -> b)
+-- map2 (a -> b -> result)
+
+updatePosition : Time -> Int -> Int -> ItemModel -> ItemModel
+updatePosition time old pos model =
+  { model | transition <- add (additive time (toFloat old) (toFloat pos)) model.transition }
 
 -----------------------------------------------------------------------------
 
 sortItems : SortOrder -> List ItemModel -> List ItemModel
 sortItems order items =
   case order of
-    SortName -> List.sortBy (.name << .item) items
-    SortId -> List.sortBy (.id << .item) items
+    SortName -> List.sortBy (.item >> .name) items
+    SortId -> List.sortBy (.item >> .id) items
 
 view : Address Action -> Model -> Html
 view address model =
+  let sortedItems = sortItems model.sort model.items
+  in
   div [ style [("margin", "10px")] ]
     [ div [ style [("margin-bottom", "10px")] ]
         [ button
@@ -118,7 +98,7 @@ view address model =
         -- (List.map (\model -> pre [] [ text (dump model.transition) ]) model.items)
     , div
         [ style [("position", "relative")] ]
-        (List.map (itemView address) model.items)
+        (List.indexedMap (itemView address model.time) sortedItems)
     ]
 
 
@@ -128,34 +108,20 @@ view address model =
 type alias ItemModel =
   { item : Item
   , transition : Transition
-  , position : Int
   }
 
-itemModel : Int -> Item -> ItemModel
-itemModel pos item = { item = item, position = pos, transition = none }
-
-updatePosition : Int -> ItemModel -> ItemModel
-updatePosition pos model =
-  let dy = itemY model.position - itemY pos in
-  { model
-    | position <- pos
-    , transition <- add (anim model.transition.time dy) model.transition
-  }
+itemModel : Item -> ItemModel
+itemModel item = { item = item, transition = Trans.none }
 
 type ItemAction = ItemTick Time
 
-updateItem : ItemAction -> ItemModel -> ItemModel
-updateItem action model =
-  case action of
-    ItemTick time ->
-      { model | transition <- tick time model.transition }
+itemY : Float -> Float
+itemY pos = pos * 50.0
 
-itemY : Int -> Float
-itemY pos = toFloat pos * 50.0
 
-itemView : Address Action -> ItemModel -> Html
-itemView address model =
-  let y = itemY model.position + value model.transition in
+itemView : Address Action -> Time -> Int -> ItemModel -> Html
+itemView address time pos model =
+  let y = itemY (toFloat pos + Trans.animate time model.transition) in
   div
     [ style
         [ ("background", "#E6E6EF")

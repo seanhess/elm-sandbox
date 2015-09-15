@@ -20,6 +20,7 @@ dump time trans = toString <| List.map (Animation.animate time) trans
 
 -- additive animations always start at a value and go to zero
 -- you can use additive time |> from N if you don't want to do the math later
-additive : Time -> Float -> Animation
-additive t fromValue =
-  animation t |> from fromValue |> to 0
+additive : Time -> Float -> Float -> Animation
+additive t old new =
+  let diffFromNew = old - new in
+  animation t |> from diffFromNew |> to 0

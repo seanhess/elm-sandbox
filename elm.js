@@ -1,849 +1,4 @@
 var Elm = Elm || { Native: {} };
-Elm.Animation = Elm.Animation || {};
-Elm.Animation.make = function (_elm) {
-   "use strict";
-   _elm.Animation = _elm.Animation || {};
-   if (_elm.Animation.values)
-   return _elm.Animation.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Animation",
-   $Basics = Elm.Basics.make(_elm),
-   $Easing = Elm.Easing.make(_elm),
-   $List = Elm.List.make(_elm),
-   $Maybe = Elm.Maybe.make(_elm),
-   $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $Time = Elm.Time.make(_elm);
-   var isScheduled = F2(function (t,
-   _v0) {
-      return function () {
-         switch (_v0.ctor)
-         {case "A": return _U.cmp(t,
-              _v0._0.start + _v0._0.delay) < 1;}
-         _U.badCase($moduleName,
-         "on line 290, column 5 to 21");
-      }();
-   });
-   var getTo = function (_v3) {
-      return function () {
-         switch (_v3.ctor)
-         {case "A": return _v3._0.to;}
-         _U.badCase($moduleName,
-         "on line 259, column 15 to 19");
-      }();
-   };
-   var getFrom = function (_v6) {
-      return function () {
-         switch (_v6.ctor)
-         {case "A": return _v6._0.from;}
-         _U.badCase($moduleName,
-         "on line 254, column 17 to 23");
-      }();
-   };
-   var getEase = function (_v9) {
-      return function () {
-         switch (_v9.ctor)
-         {case "A": return _v9._0.ease;}
-         _U.badCase($moduleName,
-         "on line 249, column 17 to 23");
-      }();
-   };
-   var getDelay = function (_v12) {
-      return function () {
-         switch (_v12.ctor)
-         {case "A":
-            return _v12._0.delay;}
-         _U.badCase($moduleName,
-         "on line 244, column 18 to 25");
-      }();
-   };
-   var getStart = function (_v15) {
-      return function () {
-         switch (_v15.ctor)
-         {case "A":
-            return _v15._0.start;}
-         _U.badCase($moduleName,
-         "on line 229, column 18 to 25");
-      }();
-   };
-   var timeElapsed = F2(function (t,
-   _v18) {
-      return function () {
-         switch (_v18.ctor)
-         {case "A":
-            return $Basics.max(0)(t - (_v18._0.start + _v18._0.delay));}
-         _U.badCase($moduleName,
-         "on line 206, column 5 to 33");
-      }();
-   });
-   var spd = F3(function (dos,
-   from,
-   to) {
-      return function () {
-         switch (dos.ctor)
-         {case "Duration":
-            return $Basics.abs(to - from) / dos._0;
-            case "Speed": return dos._0;}
-         _U.badCase($moduleName,
-         "between lines 101 and 103");
-      }();
-   });
-   var getSpeed = function (_v24) {
-      return function () {
-         switch (_v24.ctor)
-         {case "A": return A3(spd,
-              _v24._0.dos,
-              _v24._0.from,
-              _v24._0.to);}
-         _U.badCase($moduleName,
-         "on line 239, column 32 to 47");
-      }();
-   };
-   var dur = F3(function (dos,
-   from,
-   to) {
-      return function () {
-         switch (dos.ctor)
-         {case "Duration": return dos._0;
-            case "Speed":
-            return $Basics.abs(to - from) / dos._0;}
-         _U.badCase($moduleName,
-         "between lines 94 and 96");
-      }();
-   });
-   var animate = F2(function (t,
-   _v30) {
-      return function () {
-         switch (_v30.ctor)
-         {case "A": return function () {
-                 var duration = A3(dur,
-                 _v30._0.dos,
-                 _v30._0.from,
-                 _v30._0.to);
-                 var fr = A2($Basics.clamp,
-                 0,
-                 1)((t - _v30._0.start - _v30._0.delay) / duration);
-                 var eased = _v30._0.ease(fr);
-                 var correction = function () {
-                    var _v33 = _v30._0.ramp;
-                    switch (_v33.ctor)
-                    {case "Just":
-                       return function () {
-                            var from$ = _v33._0 * (t - _v30._0.start);
-                            var eased$ = $Easing.easeInOutSine(fr);
-                            return from$ - from$ * eased$;
-                         }();
-                       case "Nothing": return 0;}
-                    _U.badCase($moduleName,
-                    "between lines 127 and 132");
-                 }();
-                 return _v30._0.from + (_v30._0.to - _v30._0.from) * eased + correction;
-              }();}
-         _U.badCase($moduleName,
-         "between lines 124 and 132");
-      }();
-   });
-   var velocity = F2(function (t,
-   u) {
-      return function () {
-         var forwDiff = A2(animate,
-         t + 10,
-         u);
-         var backDiff = A2(animate,
-         t - 10,
-         u);
-         return (forwDiff - backDiff) / 20;
-      }();
-   });
-   var timeRemaining = F2(function (t,
-   _v35) {
-      return function () {
-         switch (_v35.ctor)
-         {case "A": return function () {
-                 var duration = A3(dur,
-                 _v35._0.dos,
-                 _v35._0.from,
-                 _v35._0.to);
-                 return $Basics.max(0)(_v35._0.start + _v35._0.delay + duration - t);
-              }();}
-         _U.badCase($moduleName,
-         "between lines 213 and 214");
-      }();
-   });
-   var getDuration = function (_v38) {
-      return function () {
-         switch (_v38.ctor)
-         {case "A": return A3(dur,
-              _v38._0.dos,
-              _v38._0.from,
-              _v38._0.to);}
-         _U.badCase($moduleName,
-         "on line 234, column 35 to 50");
-      }();
-   };
-   var equals = F2(function (_v41,
-   _v42) {
-      return function () {
-         switch (_v42.ctor)
-         {case "A": return function () {
-                 switch (_v41.ctor)
-                 {case "A":
-                    return _U.eq(_v41._0.start + _v41._0.delay,
-                      _v42._0.start + _v42._0.delay) && (_U.eq(_v41._0.from,
-                      _v42._0.from) && (_U.eq(_v41._0.to,
-                      _v42._0.to) && (_U.eq(_v41._0.ramp,
-                      _v42._0.ramp) && ((_U.eq(_v41._0.dos,
-                      _v42._0.dos) || _U.cmp(1.0e-3,
-                      $Basics.abs(A3(dur,
-                      _v41._0.dos,
-                      _v41._0.from,
-                      _v41._0.to) - A3(dur,
-                      _v42._0.dos,
-                      _v42._0.from,
-                      _v42._0.to))) > -1) && A2($List.all,
-                      function (t) {
-                         return _U.eq(_v41._0.ease(t),
-                         _v42._0.ease(t));
-                      },
-                      _L.fromArray([0.1
-                                   ,0.3
-                                   ,0.7
-                                   ,0.9]))))));}
-                 _U.badCase($moduleName,
-                 "between lines 278 and 283");
-              }();}
-         _U.badCase($moduleName,
-         "between lines 278 and 283");
-      }();
-   });
-   var isRunning = F2(function (t,
-   _v47) {
-      return function () {
-         switch (_v47.ctor)
-         {case "A": return function () {
-                 var duration = A3(dur,
-                 _v47._0.dos,
-                 _v47._0.from,
-                 _v47._0.to);
-                 return _U.cmp(t,
-                 _v47._0.start + _v47._0.delay) > 0 && _U.cmp(t,
-                 _v47._0.start + _v47._0.delay + duration) < 0;
-              }();}
-         _U.badCase($moduleName,
-         "between lines 296 and 297");
-      }();
-   });
-   var isDone = F2(function (t,
-   _v50) {
-      return function () {
-         switch (_v50.ctor)
-         {case "A": return function () {
-                 var duration = A3(dur,
-                 _v50._0.dos,
-                 _v50._0.from,
-                 _v50._0.to);
-                 return _U.cmp(t,
-                 _v50._0.start + _v50._0.delay + duration) > -1;
-              }();}
-         _U.badCase($moduleName,
-         "between lines 303 and 304");
-      }();
-   });
-   var A = function (a) {
-      return {ctor: "A",_0: a};
-   };
-   var undo = F2(function (t,
-   _v53) {
-      return function () {
-         switch (_v53.ctor)
-         {case "A":
-            return A(_U.replace([["from"
-                                 ,_v53._0.to]
-                                ,["to",_v53._0.from]
-                                ,["start",t]
-                                ,["delay"
-                                 ,0 - A2(timeRemaining,t,_v53)]
-                                ,["ramp",$Maybe.Nothing]
-                                ,["ease"
-                                 ,function (t) {
-                                    return 1 - _v53._0.ease(1 - t);
-                                 }]],
-              _v53._0));}
-         _U.badCase($moduleName,
-         "between lines 142 and 143");
-      }();
-   });
-   var delay = F2(function (x,
-   _v56) {
-      return function () {
-         switch (_v56.ctor)
-         {case "A":
-            return A(_U.replace([["delay"
-                                 ,x]],
-              _v56._0));}
-         _U.badCase($moduleName,
-         "on line 181, column 17 to 34");
-      }();
-   });
-   var ease = F2(function (x,
-   _v59) {
-      return function () {
-         switch (_v59.ctor)
-         {case "A":
-            return A(_U.replace([["ease"
-                                 ,x]],
-              _v59._0));}
-         _U.badCase($moduleName,
-         "on line 187, column 16 to 32");
-      }();
-   });
-   var from = F2(function (x,
-   _v62) {
-      return function () {
-         switch (_v62.ctor)
-         {case "A":
-            return A(_U.replace([["from",x]
-                                ,["ramp",$Maybe.Nothing]],
-              _v62._0));}
-         _U.badCase($moduleName,
-         "on line 192, column 16 to 49");
-      }();
-   });
-   var to = F2(function (x,_v65) {
-      return function () {
-         switch (_v65.ctor)
-         {case "A":
-            return A(_U.replace([["to",x]
-                                ,["ramp",$Maybe.Nothing]],
-              _v65._0));}
-         _U.badCase($moduleName,
-         "on line 199, column 14 to 45");
-      }();
-   });
-   var AnimRecord = F7(function (a,
-   b,
-   c,
-   d,
-   e,
-   f,
-   g) {
-      return {_: {}
-             ,delay: b
-             ,dos: c
-             ,ease: e
-             ,from: f
-             ,ramp: d
-             ,start: a
-             ,to: g};
-   });
-   var Speed = function (a) {
-      return {ctor: "Speed",_0: a};
-   };
-   var speed = F2(function (x,
-   _v68) {
-      return function () {
-         switch (_v68.ctor)
-         {case "A":
-            return A(_U.replace([["dos"
-                                 ,Speed($Basics.abs(x))]],
-              _v68._0));}
-         _U.badCase($moduleName,
-         "on line 175, column 17 to 44");
-      }();
-   });
-   var Duration = function (a) {
-      return {ctor: "Duration"
-             ,_0: a};
-   };
-   var defaultDuration = Duration(750 * $Time.millisecond);
-   var animation = function (now) {
-      return A(A7(AnimRecord,
-      now,
-      0,
-      defaultDuration,
-      $Maybe.Nothing,
-      $Easing.easeInOutSine,
-      0,
-      1));
-   };
-   var retarget = F3(function (t,
-   newTo,
-   _v71) {
-      return function () {
-         switch (_v71.ctor)
-         {case "A":
-            return A2(isScheduled,
-              t,
-              _v71) ? A(_U.replace([["to"
-                                    ,newTo]
-                                   ,["ramp",$Maybe.Nothing]],
-              _v71._0)) : A2(isDone,
-              t,
-              _v71) ? A(_U.replace([["start"
-                                    ,t]
-                                   ,["from",_v71._0.to]
-                                   ,["to",newTo]
-                                   ,["delay",0]
-                                   ,["ramp",$Maybe.Nothing]],
-              _v71._0)) : _U.eq(_v71._0.from,
-              _v71._0.to) ? A(_U.replace([["start"
-                                          ,t]
-                                         ,["to",newTo]
-                                         ,["dos",defaultDuration]
-                                         ,["ramp",$Maybe.Nothing]],
-              _v71._0)) : function () {
-                 var pos = A2(animate,t,_v71);
-                 var vel = A2(velocity,t,_v71);
-                 return A(A7(AnimRecord,
-                 t,
-                 0,
-                 Speed(vel / 3),
-                 $Maybe.Just(vel),
-                 _v71._0.ease,
-                 pos,
-                 newTo));
-              }();}
-         _U.badCase($moduleName,
-         "between lines 155 and 161");
-      }();
-   });
-   var $static = function (x) {
-      return A(A7(AnimRecord,
-      0,
-      0,
-      Duration(0),
-      $Maybe.Nothing,
-      $Easing.easeInOutSine,
-      x,
-      x));
-   };
-   var duration = F2(function (x,
-   _v74) {
-      return function () {
-         switch (_v74.ctor)
-         {case "A":
-            return A(_U.replace([["dos"
-                                 ,Duration(x)]],
-              _v74._0));}
-         _U.badCase($moduleName,
-         "on line 167, column 20 to 44");
-      }();
-   });
-   _elm.Animation.values = {_op: _op
-                           ,animation: animation
-                           ,$static: $static
-                           ,animate: animate
-                           ,duration: duration
-                           ,speed: speed
-                           ,delay: delay
-                           ,ease: ease
-                           ,from: from
-                           ,to: to
-                           ,undo: undo
-                           ,retarget: retarget
-                           ,getStart: getStart
-                           ,getDuration: getDuration
-                           ,getSpeed: getSpeed
-                           ,getDelay: getDelay
-                           ,getEase: getEase
-                           ,getFrom: getFrom
-                           ,getTo: getTo
-                           ,equals: equals
-                           ,velocity: velocity
-                           ,timeElapsed: timeElapsed
-                           ,timeRemaining: timeRemaining
-                           ,isScheduled: isScheduled
-                           ,isRunning: isRunning
-                           ,isDone: isDone};
-   return _elm.Animation.values;
-};
-Elm.Animation = Elm.Animation || {};
-Elm.Animation.ListExample = Elm.Animation.ListExample || {};
-Elm.Animation.ListExample.make = function (_elm) {
-   "use strict";
-   _elm.Animation = _elm.Animation || {};
-   _elm.Animation.ListExample = _elm.Animation.ListExample || {};
-   if (_elm.Animation.ListExample.values)
-   return _elm.Animation.ListExample.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Animation.ListExample",
-   $Animation = Elm.Animation.make(_elm),
-   $Basics = Elm.Basics.make(_elm),
-   $Effects = Elm.Effects.make(_elm),
-   $Html = Elm.Html.make(_elm),
-   $Html$Attributes = Elm.Html.Attributes.make(_elm),
-   $Html$Events = Elm.Html.Events.make(_elm),
-   $List = Elm.List.make(_elm),
-   $Maybe = Elm.Maybe.make(_elm),
-   $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $StartApp = Elm.StartApp.make(_elm),
-   $String = Elm.String.make(_elm),
-   $Task = Elm.Task.make(_elm),
-   $Time = Elm.Time.make(_elm);
-   var buttonStyle = function (isSelected) {
-      return function () {
-         var highlight = isSelected ? _L.fromArray([{ctor: "_Tuple2"
-                                                    ,_0: "borderBottomWidth"
-                                                    ,_1: "4px"}
-                                                   ,{ctor: "_Tuple2"
-                                                    ,_0: "background"
-                                                    ,_1: "#FFF6D6"}]) : _L.fromArray([]);
-         return A2($Basics._op["++"],
-         _L.fromArray([{ctor: "_Tuple2"
-                       ,_0: "color"
-                       ,_1: "#555"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "text-transform"
-                       ,_1: "uppercase"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "cursor"
-                       ,_1: "pointer"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "letter-spacing"
-                       ,_1: "0.15em"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "padding"
-                       ,_1: "8px"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "border"
-                       ,_1: "solid 2px #555"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "background"
-                       ,_1: "white"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "borderRadius"
-                       ,_1: "6px"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "fontWeight"
-                       ,_1: "bold"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "font"
-                       ,_1: "11px \'HelveticaNeue\'"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "outline"
-                       ,_1: "none"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "marginRight"
-                       ,_1: "10px"}]),
-         highlight);
-      }();
-   };
-   var maxWidth = 200.0;
-   var itemY = function (pos) {
-      return $Basics.toFloat(pos) * 50.0;
-   };
-   var ItemTick = function (a) {
-      return {ctor: "ItemTick"
-             ,_0: a};
-   };
-   var ItemModel = F3(function (a,
-   b,
-   c) {
-      return {_: {}
-             ,item: a
-             ,position: c
-             ,transition: b};
-   });
-   var sortItems = F2(function (order,
-   items) {
-      return function () {
-         switch (order.ctor)
-         {case "SortId":
-            return A2($List.sortBy,
-              function ($) {
-                 return function (_) {
-                    return _.id;
-                 }(function (_) {
-                    return _.item;
-                 }($));
-              },
-              items);
-            case "SortName":
-            return A2($List.sortBy,
-              function ($) {
-                 return function (_) {
-                    return _.name;
-                 }(function (_) {
-                    return _.item;
-                 }($));
-              },
-              items);}
-         _U.badCase($moduleName,
-         "between lines 99 and 101");
-      }();
-   });
-   var Tick = function (a) {
-      return {ctor: "Tick",_0: a};
-   };
-   var Sort = function (a) {
-      return {ctor: "Sort",_0: a};
-   };
-   var Model = F2(function (a,b) {
-      return {_: {}
-             ,items: b
-             ,sort: a};
-   });
-   var Item = F2(function (a,b) {
-      return {_: {},id: a,name: b};
-   });
-   var SortId = {ctor: "SortId"};
-   var SortName = {ctor: "SortName"};
-   var Closed = {ctor: "Closed"};
-   var Open = {ctor: "Open"};
-   var anim = F2(function (t,s) {
-      return $Animation.duration(0.8 * $Time.second)($Animation.to(0)($Animation.from(s)($Animation.animation(t))));
-   });
-   var dump = function (trans) {
-      return A2($String.join,
-      "\n",
-      _L.fromArray([A2($Basics._op["++"],
-                   "time: ",
-                   $Basics.toString($Basics.round(trans.time / 1000)))
-                   ,A2($Basics._op["++"],
-                   "num: ",
-                   $Basics.toString($List.length(trans.animations)))
-                   ,$Basics.toString(A2($List.map,
-                   $Animation.animate(trans.time),
-                   trans.animations))]));
-   };
-   var value = function (trans) {
-      return $List.sum(A2($List.map,
-      $Animation.animate(trans.time),
-      trans.animations));
-   };
-   var itemView = F2(function (address,
-   model) {
-      return function () {
-         var y = itemY(model.position) + value(model.transition);
-         return A2($Html.div,
-         _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
-                                                            ,_0: "background"
-                                                            ,_1: "#E6E6EF"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "border"
-                                                            ,_1: "solid 1px #716DCF"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "borderRightWidth"
-                                                            ,_1: "10px"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "borderLeftWidth"
-                                                            ,_1: "0px"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "borderTopWidth"
-                                                            ,_1: "0px"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "margin"
-                                                            ,_1: "10px"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "marginLeft"
-                                                            ,_1: "0px"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "padding"
-                                                            ,_1: "10px"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "width"
-                                                            ,_1: "320px"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "position"
-                                                            ,_1: "absolute"}
-                                                           ,{ctor: "_Tuple2"
-                                                            ,_0: "top"
-                                                            ,_1: A2($Basics._op["++"],
-                                                            $Basics.toString(y),
-                                                            "px")}]))]),
-         _L.fromArray([$Html.text(model.item.name)]));
-      }();
-   });
-   var view = F2(function (address,
-   model) {
-      return A2($Html.div,
-      _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
-                                                         ,_0: "margin"
-                                                         ,_1: "10px"}]))]),
-      _L.fromArray([A2($Html.div,
-                   _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
-                                                                      ,_0: "margin-bottom"
-                                                                      ,_1: "10px"}]))]),
-                   _L.fromArray([A2($Html.button,
-                                _L.fromArray([$Html$Attributes.style(buttonStyle(_U.eq(model.sort,
-                                             SortName)))
-                                             ,A2($Html$Events.onClick,
-                                             address,
-                                             Sort(SortName))]),
-                                _L.fromArray([$Html.text("Sort Name")]))
-                                ,A2($Html.button,
-                                _L.fromArray([$Html$Attributes.style(buttonStyle(_U.eq(model.sort,
-                                             SortId)))
-                                             ,A2($Html$Events.onClick,
-                                             address,
-                                             Sort(SortId))]),
-                                _L.fromArray([$Html.text("Sort Id")]))]))
-                   ,A2($Html.div,
-                   _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
-                                                                      ,_0: "position"
-                                                                      ,_1: "relative"}]))]),
-                   A2($List.map,
-                   itemView(address),
-                   model.items))]));
-   });
-   var tick = F2(function (time,
-   trans) {
-      return function () {
-         var anims = A2($List.filter,
-         function ($) {
-            return $Basics.not($Animation.isDone(time)($));
-         },
-         trans.animations);
-         return _U.replace([["animations"
-                            ,anims]
-                           ,["time",time]],
-         trans);
-      }();
-   });
-   var updateItem = F2(function (action,
-   model) {
-      return function () {
-         switch (action.ctor)
-         {case "ItemTick":
-            return _U.replace([["transition"
-                               ,A2(tick,
-                               action._0,
-                               model.transition)]],
-              model);}
-         _U.badCase($moduleName,
-         "between lines 149 and 151");
-      }();
-   });
-   var add = F2(function (a,
-   trans) {
-      return _U.replace([["animations"
-                         ,A2($List._op["::"],
-                         a,
-                         trans.animations)]],
-      trans);
-   });
-   var updatePosition = F2(function (pos,
-   model) {
-      return function () {
-         var dy = itemY(model.position) - itemY(pos);
-         return _U.replace([["position"
-                            ,pos]
-                           ,["transition"
-                            ,A2(add,
-                            A2(anim,
-                            model.transition.time,
-                            dy),
-                            model.transition)]],
-         model);
-      }();
-   });
-   var update = F2(function (action,
-   model) {
-      return function () {
-         switch (action.ctor)
-         {case "Sort":
-            return function () {
-                 var items = $List.indexedMap(updatePosition)(A2(sortItems,
-                 action._0,
-                 model.items));
-                 return {ctor: "_Tuple2"
-                        ,_0: _U.replace([["sort"
-                                         ,action._0]
-                                        ,["items",items]],
-                        model)
-                        ,_1: $Effects.none};
-              }();
-            case "Tick":
-            return function () {
-                 var items = A2($List.map,
-                 updateItem(ItemTick(action._0)),
-                 model.items);
-                 return {ctor: "_Tuple2"
-                        ,_0: _U.replace([["items"
-                                         ,items]],
-                        model)
-                        ,_1: $Effects.tick(Tick)};
-              }();}
-         _U.badCase($moduleName,
-         "between lines 81 and 93");
-      }();
-   });
-   var none = {_: {}
-              ,animations: _L.fromArray([])
-              ,time: 0};
-   var itemModel = F2(function (pos,
-   item) {
-      return {_: {}
-             ,item: item
-             ,position: pos
-             ,transition: none};
-   });
-   var init = {ctor: "_Tuple2"
-              ,_0: {_: {}
-                   ,items: A2($List.indexedMap,
-                   itemModel,
-                   _L.fromArray([A2(Item,1,"one")
-                                ,A2(Item,2,"two")
-                                ,A2(Item,3,"three")
-                                ,A2(Item,4,"four")
-                                ,A2(Item,5,"five")
-                                ,A2(Item,6,"six")]))
-                   ,sort: SortId}
-              ,_1: $Effects.tick(Tick)};
-   var app = $StartApp.start({_: {}
-                             ,init: init
-                             ,inputs: _L.fromArray([])
-                             ,update: update
-                             ,view: view});
-   var main = app.html;
-   var tasks = Elm.Native.Task.make(_elm).performSignal("tasks",
-   app.tasks);
-   var Transition = F2(function (a,
-   b) {
-      return {_: {}
-             ,animations: a
-             ,time: b};
-   });
-   _elm.Animation.ListExample.values = {_op: _op
-                                       ,Transition: Transition
-                                       ,none: none
-                                       ,add: add
-                                       ,tick: tick
-                                       ,value: value
-                                       ,dump: dump
-                                       ,anim: anim
-                                       ,Open: Open
-                                       ,Closed: Closed
-                                       ,SortName: SortName
-                                       ,SortId: SortId
-                                       ,Item: Item
-                                       ,Model: Model
-                                       ,init: init
-                                       ,Sort: Sort
-                                       ,Tick: Tick
-                                       ,update: update
-                                       ,sortItems: sortItems
-                                       ,view: view
-                                       ,ItemModel: ItemModel
-                                       ,itemModel: itemModel
-                                       ,updatePosition: updatePosition
-                                       ,ItemTick: ItemTick
-                                       ,updateItem: updateItem
-                                       ,itemY: itemY
-                                       ,itemView: itemView
-                                       ,maxWidth: maxWidth
-                                       ,buttonStyle: buttonStyle
-                                       ,app: app
-                                       ,main: main};
-   return _elm.Animation.ListExample.values;
-};
 Elm.Array = Elm.Array || {};
 Elm.Array.make = function (_elm) {
    "use strict";
@@ -2645,324 +1800,6 @@ Elm.Dict.make = function (_elm) {
                       ,fromList: fromList};
    return _elm.Dict.values;
 };
-Elm.Easing = Elm.Easing || {};
-Elm.Easing.make = function (_elm) {
-   "use strict";
-   _elm.Easing = _elm.Easing || {};
-   if (_elm.Easing.values)
-   return _elm.Easing.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Easing",
-   $Basics = Elm.Basics.make(_elm),
-   $Color = Elm.Color.make(_elm),
-   $List = Elm.List.make(_elm),
-   $Maybe = Elm.Maybe.make(_elm),
-   $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $Time = Elm.Time.make(_elm);
-   var cycle = F3(function (animation,
-   d,
-   t) {
-      return A2(animation,
-      1,
-      t / d - $Basics.toFloat($Basics.floor(t / d)));
-   });
-   var flip = F2(function (easing,
-   time) {
-      return easing(1 - time);
-   });
-   var retour = F2(function (easing,
-   time) {
-      return _U.cmp(time,
-      0.5) < 0 ? easing(time * 2) : flip(easing)((time - 0.5) * 2);
-   });
-   var invert = F2(function (easing,
-   time) {
-      return 1 - easing(1 - time);
-   });
-   var inOut = F3(function (e1,
-   e2,
-   time) {
-      return _U.cmp(time,
-      0.5) < 0 ? e1(time * 2) / 2 : 0.5 + e2((time - 0.5) * 2) / 2;
-   });
-   var easeInElastic = function (time) {
-      return function () {
-         var t$ = time - 1;
-         var p = 0.3;
-         var s = 7.5e-2;
-         return 0 - Math.pow(2,
-         10 * t$) * $Basics.sin((t$ - s) * (2 * $Basics.pi) / p);
-      }();
-   };
-   var easeOutElastic = invert(easeInElastic);
-   var easeInOutElastic = A2(inOut,
-   easeInElastic,
-   easeOutElastic);
-   var easeOutBounce = function (time) {
-      return function () {
-         var t4 = time - 2.65 / 2.75;
-         var t3 = time - 2.25 / 2.75;
-         var t2 = time - 1.5 / 2.75;
-         var a = 7.5625;
-         return _U.cmp(time,
-         1 / 2.75) < 0 ? a * time * time : _U.cmp(time,
-         2 / 2.75) < 0 ? a * t2 * t2 + 0.75 : _U.cmp(time,
-         2.5 / 2.75) < 0 ? a * t3 * t3 + 0.9375 : a * t4 * t4 + 0.984375;
-      }();
-   };
-   var easeInBounce = invert(easeOutBounce);
-   var easeInOutBounce = A2(inOut,
-   easeInBounce,
-   easeOutBounce);
-   var easeInBack = function (time) {
-      return time * time * (2.70158 * time - 1.70158);
-   };
-   var easeOutBack = invert(easeInBack);
-   var easeInOutBack = A2(inOut,
-   easeInBack,
-   easeOutBack);
-   var easeOutCirc = function (time) {
-      return $Basics.sqrt(1 - Math.pow(time - 1,
-      2));
-   };
-   var easeInCirc = invert(easeOutCirc);
-   var easeInOutCirc = A2(inOut,
-   easeInCirc,
-   easeOutCirc);
-   var easeInExpo = function (time) {
-      return Math.pow(2,
-      10 * (time - 1));
-   };
-   var easeOutExpo = invert(easeInExpo);
-   var easeInOutExpo = A2(inOut,
-   easeInExpo,
-   easeOutExpo);
-   var easeOutSine = function (time) {
-      return $Basics.sin(time * ($Basics.pi / 2));
-   };
-   var easeInSine = invert(easeOutSine);
-   var easeInOutSine = A2(inOut,
-   easeInSine,
-   easeOutSine);
-   var easeInQuint = function (time) {
-      return Math.pow(time,5);
-   };
-   var easeOutQuint = invert(easeInQuint);
-   var easeInOutQuint = A2(inOut,
-   easeInQuint,
-   easeOutQuint);
-   var easeInQuart = function (time) {
-      return Math.pow(time,4);
-   };
-   var easeOutQuart = invert(easeInQuart);
-   var easeInOutQuart = A2(inOut,
-   easeInQuart,
-   easeOutQuart);
-   var easeInCubic = function (time) {
-      return Math.pow(time,3);
-   };
-   var easeOutCubic = invert(easeInCubic);
-   var easeInOutCubic = A2(inOut,
-   easeInCubic,
-   easeOutCubic);
-   var easeInQuad = function (time) {
-      return Math.pow(time,2);
-   };
-   var easeOutQuad = invert(easeInQuad);
-   var easeInOutQuad = A2(inOut,
-   easeInQuad,
-   easeOutQuad);
-   var linear = $Basics.identity;
-   var pair = F4(function (interpolate,
-   _v0,
-   _v1,
-   v) {
-      return function () {
-         switch (_v1.ctor)
-         {case "_Tuple2":
-            return function () {
-                 switch (_v0.ctor)
-                 {case "_Tuple2":
-                    return {ctor: "_Tuple2"
-                           ,_0: A3(interpolate,
-                           _v0._0,
-                           _v1._0,
-                           v)
-                           ,_1: A3(interpolate,
-                           _v0._1,
-                           _v1._1,
-                           v)};}
-                 _U.badCase($moduleName,
-                 "on line 150, column 6 to 46");
-              }();}
-         _U.badCase($moduleName,
-         "on line 150, column 6 to 46");
-      }();
-   });
-   var $float = F3(function (from,
-   to,
-   v) {
-      return from + (to - from) * v;
-   });
-   var point2d = F3(function (from,
-   to,
-   v) {
-      return {_: {}
-             ,x: A3($float,from.x,to.x,v)
-             ,y: A3($float,from.y,to.y,v)};
-   });
-   var point3d = F3(function (from,
-   to,
-   v) {
-      return {_: {}
-             ,x: A3($float,from.x,to.x,v)
-             ,y: A3($float,from.y,to.y,v)
-             ,z: A3($float,from.z,to.z,v)};
-   });
-   var color = F3(function (from,
-   to,
-   v) {
-      return function () {
-         var float$ = F3(function (from,
-         to,
-         v) {
-            return $Basics.round(A3($float,
-            $Basics.toFloat(from),
-            $Basics.toFloat(to),
-            v));
-         });
-         var $ = {ctor: "_Tuple2"
-                 ,_0: $Color.toRgb(from)
-                 ,_1: $Color.toRgb(to)},
-         rgb1 = $._0,
-         rgb2 = $._1;
-         var $ = {ctor: "_Tuple4"
-                 ,_0: rgb1.red
-                 ,_1: rgb1.green
-                 ,_2: rgb1.blue
-                 ,_3: rgb1.alpha},
-         r1 = $._0,
-         g1 = $._1,
-         b1 = $._2,
-         a1 = $._3;
-         var $ = {ctor: "_Tuple4"
-                 ,_0: rgb2.red
-                 ,_1: rgb2.green
-                 ,_2: rgb2.blue
-                 ,_3: rgb2.alpha},
-         r2 = $._0,
-         g2 = $._1,
-         b2 = $._2,
-         a2 = $._3;
-         return A4($Color.rgba,
-         A3(float$,r1,r2,v),
-         A3(float$,g1,g2,v),
-         A3(float$,b1,b2,v),
-         A3($float,a1,a2,v));
-      }();
-   });
-   var bezier = F5(function (x1,
-   y1,
-   x2,
-   y2,
-   time) {
-      return function () {
-         var casteljau = function (ps) {
-            return function () {
-               switch (ps.ctor)
-               {case "::": switch (ps._0.ctor)
-                    {case "_Tuple2":
-                       switch (ps._1.ctor)
-                         {case "[]": return ps._0._1;}
-                         break;}
-                    break;}
-               return casteljau(A3($List.map2,
-               F2(function (x,y) {
-                  return A4(pair,
-                  $float,
-                  x,
-                  y,
-                  time);
-               }),
-               ps,
-               A2($Maybe.withDefault,
-               _L.fromArray([]),
-               $List.tail(ps))));
-            }();
-         };
-         return casteljau(_L.fromArray([{ctor: "_Tuple2"
-                                        ,_0: 0
-                                        ,_1: 0}
-                                       ,{ctor: "_Tuple2",_0: x1,_1: y1}
-                                       ,{ctor: "_Tuple2",_0: x2,_1: y2}
-                                       ,{ctor: "_Tuple2"
-                                        ,_0: 1
-                                        ,_1: 1}]));
-      }();
-   });
-   var ease = F6(function (easing,
-   interpolation,
-   from,
-   to,
-   duration,
-   time) {
-      return A3(interpolation,
-      from,
-      to,
-      easing(A2($Basics.min,
-      time / duration,
-      1)));
-   });
-   _elm.Easing.values = {_op: _op
-                        ,ease: ease
-                        ,$float: $float
-                        ,point2d: point2d
-                        ,point3d: point3d
-                        ,color: color
-                        ,pair: pair
-                        ,cycle: cycle
-                        ,invert: invert
-                        ,retour: retour
-                        ,inOut: inOut
-                        ,flip: flip
-                        ,bezier: bezier
-                        ,linear: linear
-                        ,easeInQuad: easeInQuad
-                        ,easeOutQuad: easeOutQuad
-                        ,easeInOutQuad: easeInOutQuad
-                        ,easeInCubic: easeInCubic
-                        ,easeOutCubic: easeOutCubic
-                        ,easeInOutCubic: easeInOutCubic
-                        ,easeInQuart: easeInQuart
-                        ,easeOutQuart: easeOutQuart
-                        ,easeInOutQuart: easeInOutQuart
-                        ,easeInQuint: easeInQuint
-                        ,easeOutQuint: easeOutQuint
-                        ,easeInOutQuint: easeInOutQuint
-                        ,easeInSine: easeInSine
-                        ,easeOutSine: easeOutSine
-                        ,easeInOutSine: easeInOutSine
-                        ,easeInExpo: easeInExpo
-                        ,easeOutExpo: easeOutExpo
-                        ,easeInOutExpo: easeInOutExpo
-                        ,easeInCirc: easeInCirc
-                        ,easeOutCirc: easeOutCirc
-                        ,easeInOutCirc: easeInOutCirc
-                        ,easeInBack: easeInBack
-                        ,easeOutBack: easeOutBack
-                        ,easeInOutBack: easeInOutBack
-                        ,easeInBounce: easeInBounce
-                        ,easeOutBounce: easeOutBounce
-                        ,easeInOutBounce: easeInOutBounce
-                        ,easeInElastic: easeInElastic
-                        ,easeOutElastic: easeOutElastic
-                        ,easeInOutElastic: easeInOutElastic};
-   return _elm.Easing.values;
-};
 Elm.Effects = Elm.Effects || {};
 Elm.Effects.make = function (_elm) {
    "use strict";
@@ -3104,6 +1941,120 @@ Elm.Effects.make = function (_elm) {
                          ,batch: batch
                          ,toTask: toTask};
    return _elm.Effects.values;
+};
+Elm.Example = Elm.Example || {};
+Elm.Example.StateProps = Elm.Example.StateProps || {};
+Elm.Example.StateProps.make = function (_elm) {
+   "use strict";
+   _elm.Example = _elm.Example || {};
+   _elm.Example.StateProps = _elm.Example.StateProps || {};
+   if (_elm.Example.StateProps.values)
+   return _elm.Example.StateProps.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Example.StateProps",
+   $Basics = Elm.Basics.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $StartApp$Simple = Elm.StartApp.Simple.make(_elm),
+   $StateProps$WordSelect = Elm.StateProps.WordSelect.make(_elm);
+   var wordView = function (word) {
+      return A2($Html.li,
+      _L.fromArray([]),
+      _L.fromArray([$Html.text(word)]));
+   };
+   var update = F2(function (action,
+   model) {
+      return function () {
+         switch (action.ctor)
+         {case "Select":
+            return function () {
+                 var $ = A2($StateProps$WordSelect.update,
+                 action._0,
+                 model.select),
+                 select = $._0,
+                 event = $._1;
+                 var words = function () {
+                    switch (event.ctor)
+                    {case "Add":
+                       return A2($List._op["::"],
+                         event._0,
+                         model.words);
+                       case "Delete":
+                       return A2($List.filter,
+                         function (w) {
+                            return !_U.eq(w,event._0);
+                         },
+                         model.words);}
+                    return model.words;
+                 }();
+                 return _U.replace([["select"
+                                    ,select]
+                                   ,["words",words]],
+                 model);
+              }();}
+         _U.badCase($moduleName,
+         "between lines 27 and 41");
+      }();
+   });
+   var Select = function (a) {
+      return {ctor: "Select"
+             ,_0: a};
+   };
+   var view = F2(function (address,
+   model) {
+      return A2($Html.div,
+      _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                         ,_0: "margin"
+                                                         ,_1: "10px"}]))]),
+      _L.fromArray([A2($Html.h1,
+                   _L.fromArray([]),
+                   _L.fromArray([$Html.text("List of Words")]))
+                   ,A3($StateProps$WordSelect.view,
+                   A2($Signal.forwardTo,
+                   address,
+                   Select),
+                   {_: {},words: model.words},
+                   model.select)
+                   ,A2($Html.hr,
+                   _L.fromArray([]),
+                   _L.fromArray([]))
+                   ,A2($Html.h4,
+                   _L.fromArray([]),
+                   _L.fromArray([$Html.text("Words used again in a different view:")]))
+                   ,A2($Html.ul,
+                   _L.fromArray([]),
+                   A2($List.map,
+                   wordView,
+                   model.words))]));
+   });
+   var init = {_: {}
+              ,select: $StateProps$WordSelect.init
+              ,words: _L.fromArray([])};
+   var main = $StartApp$Simple.start({_: {}
+                                     ,model: init
+                                     ,update: update
+                                     ,view: view});
+   var Model = F2(function (a,b) {
+      return {_: {}
+             ,select: a
+             ,words: b};
+   });
+   _elm.Example.StateProps.values = {_op: _op
+                                    ,Model: Model
+                                    ,init: init
+                                    ,Select: Select
+                                    ,update: update
+                                    ,main: main
+                                    ,view: view
+                                    ,wordView: wordView};
+   return _elm.Example.StateProps.values;
 };
 Elm.Graphics = Elm.Graphics || {};
 Elm.Graphics.Collage = Elm.Graphics.Collage || {};
@@ -13690,93 +12641,246 @@ Elm.Signal.make = function (_elm) {
    return _elm.Signal.values;
 };
 Elm.StartApp = Elm.StartApp || {};
-Elm.StartApp.make = function (_elm) {
+Elm.StartApp.Simple = Elm.StartApp.Simple || {};
+Elm.StartApp.Simple.make = function (_elm) {
    "use strict";
    _elm.StartApp = _elm.StartApp || {};
-   if (_elm.StartApp.values)
-   return _elm.StartApp.values;
+   _elm.StartApp.Simple = _elm.StartApp.Simple || {};
+   if (_elm.StartApp.Simple.values)
+   return _elm.StartApp.Simple.values;
    var _op = {},
    _N = Elm.Native,
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
-   $moduleName = "StartApp",
+   $moduleName = "StartApp.Simple",
    $Basics = Elm.Basics.make(_elm),
-   $Effects = Elm.Effects.make(_elm),
    $Html = Elm.Html.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $Task = Elm.Task.make(_elm);
+   $Signal = Elm.Signal.make(_elm);
    var start = function (config) {
       return function () {
-         var update = F2(function (_v0,
-         _v1) {
-            return function () {
-               switch (_v1.ctor)
-               {case "_Tuple2":
-                  return function () {
-                       switch (_v0.ctor)
-                       {case "Just":
-                          return A2(config.update,
-                            _v0._0,
-                            _v1._0);}
-                       _U.badCase($moduleName,
-                       "on line 92, column 13 to 39");
-                    }();}
-               _U.badCase($moduleName,
-               "on line 92, column 13 to 39");
-            }();
-         });
-         var messages = $Signal.mailbox($Maybe.Nothing);
+         var actions = $Signal.mailbox($Maybe.Nothing);
          var address = A2($Signal.forwardTo,
-         messages.address,
+         actions.address,
          $Maybe.Just);
-         var inputs = $Signal.mergeMany(A2($List._op["::"],
-         messages.signal,
-         A2($List.map,
-         $Signal.map($Maybe.Just),
-         config.inputs)));
-         var effectsAndModel = A3($Signal.foldp,
-         update,
-         config.init,
-         inputs);
-         var model = A2($Signal.map,
-         $Basics.fst,
-         effectsAndModel);
-         return {_: {}
-                ,html: A2($Signal.map,
-                config.view(address),
-                model)
-                ,model: model
-                ,tasks: A2($Signal.map,
-                function ($) {
-                   return $Effects.toTask(address)($Basics.snd($));
-                },
-                effectsAndModel)};
+         var model = A3($Signal.foldp,
+         F2(function (_v0,model) {
+            return function () {
+               switch (_v0.ctor)
+               {case "Just":
+                  return A2(config.update,
+                    _v0._0,
+                    model);}
+               _U.badCase($moduleName,
+               "on line 91, column 34 to 60");
+            }();
+         }),
+         config.model,
+         actions.signal);
+         return A2($Signal.map,
+         config.view(address),
+         model);
       }();
    };
-   var App = F3(function (a,b,c) {
-      return {_: {}
-             ,html: a
-             ,model: b
-             ,tasks: c};
-   });
-   var Config = F4(function (a,
+   var Config = F3(function (a,
    b,
-   c,
-   d) {
+   c) {
       return {_: {}
-             ,init: a
-             ,inputs: d
-             ,update: b
-             ,view: c};
+             ,model: a
+             ,update: c
+             ,view: b};
    });
-   _elm.StartApp.values = {_op: _op
-                          ,start: start
-                          ,Config: Config
-                          ,App: App};
-   return _elm.StartApp.values;
+   _elm.StartApp.Simple.values = {_op: _op
+                                 ,Config: Config
+                                 ,start: start};
+   return _elm.StartApp.Simple.values;
+};
+Elm.StateProps = Elm.StateProps || {};
+Elm.StateProps.WordSelect = Elm.StateProps.WordSelect || {};
+Elm.StateProps.WordSelect.make = function (_elm) {
+   "use strict";
+   _elm.StateProps = _elm.StateProps || {};
+   _elm.StateProps.WordSelect = _elm.StateProps.WordSelect || {};
+   if (_elm.StateProps.WordSelect.values)
+   return _elm.StateProps.WordSelect.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "StateProps.WordSelect",
+   $Basics = Elm.Basics.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var clickable = _L.fromArray([{ctor: "_Tuple2"
+                                 ,_0: "cursor"
+                                 ,_1: "pointer"}]);
+   var None = {ctor: "None"};
+   var Delete = function (a) {
+      return {ctor: "Delete"
+             ,_0: a};
+   };
+   var Add = function (a) {
+      return {ctor: "Add",_0: a};
+   };
+   var update = F2(function (action,
+   state) {
+      return function () {
+         switch (action.ctor)
+         {case "Enter":
+            return {ctor: "_Tuple2"
+                   ,_0: _U.replace([["currentText"
+                                    ,""]],
+                   state)
+                   ,_1: Add(state.currentText)};
+            case "OnDelete":
+            return {ctor: "_Tuple2"
+                   ,_0: state
+                   ,_1: Delete(action._0)};
+            case "Update":
+            return {ctor: "_Tuple2"
+                   ,_0: _U.replace([["currentText"
+                                    ,action._0]],
+                   state)
+                   ,_1: None};}
+         _U.badCase($moduleName,
+         "between lines 47 and 58");
+      }();
+   });
+   var OnDelete = function (a) {
+      return {ctor: "OnDelete"
+             ,_0: a};
+   };
+   var wordView = F2(function (address,
+   word) {
+      return A2($Html.span,
+      _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                         ,_0: "border"
+                                                         ,_1: "solid 1px #4CAE4C"}
+                                                        ,{ctor: "_Tuple2"
+                                                         ,_0: "background"
+                                                         ,_1: "#5CB85C"}
+                                                        ,{ctor: "_Tuple2"
+                                                         ,_0: "color"
+                                                         ,_1: "white"}
+                                                        ,{ctor: "_Tuple2"
+                                                         ,_0: "display"
+                                                         ,_1: "inline-block"}
+                                                        ,{ctor: "_Tuple2"
+                                                         ,_0: "padding"
+                                                         ,_1: "4px"}
+                                                        ,{ctor: "_Tuple2"
+                                                         ,_0: "borderRadius"
+                                                         ,_1: "2px"}
+                                                        ,{ctor: "_Tuple2"
+                                                         ,_0: "paddingLeft"
+                                                         ,_1: "12px"}
+                                                        ,{ctor: "_Tuple2"
+                                                         ,_0: "paddingRight"
+                                                         ,_1: "12px"}
+                                                        ,{ctor: "_Tuple2"
+                                                         ,_0: "marginLeft"
+                                                         ,_1: "4px"}
+                                                        ,{ctor: "_Tuple2"
+                                                         ,_0: "marginBottom"
+                                                         ,_1: "6px"}]))]),
+      _L.fromArray([A2($Html.span,
+                   _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                                      ,_0: "marginRight"
+                                                                      ,_1: "10px"}]))]),
+                   _L.fromArray([A2($Html.a,
+                   _L.fromArray([$Html$Attributes.style(clickable)
+                                ,A2($Html$Events.onClick,
+                                address,
+                                OnDelete(word))]),
+                   _L.fromArray([$Html.text("×")]))]))
+                   ,A2($Html.span,
+                   _L.fromArray([]),
+                   _L.fromArray([$Html.text(word)]))]));
+   });
+   var Enter = {ctor: "Enter"};
+   var Update = function (a) {
+      return {ctor: "Update"
+             ,_0: a};
+   };
+   var view = F3(function (address,
+   props,
+   state) {
+      return function () {
+         var tags = A2($List.map,
+         wordView(address),
+         props.words);
+         return A2($Html.form,
+         _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                            ,_0: "marginBottom"
+                                                            ,_1: "15px"}
+                                                           ,{ctor: "_Tuple2"
+                                                            ,_0: "display"
+                                                            ,_1: "flex"}
+                                                           ,{ctor: "_Tuple2"
+                                                            ,_0: "flex-wrap"
+                                                            ,_1: "wrap"}]))
+                      ,$Html$Attributes.action("javascript:none")
+                      ,A2($Html$Events.onSubmit,
+                      address,
+                      Enter)]),
+         A2($Basics._op["++"],
+         _L.fromArray([A2($Html.input,
+         _L.fromArray([$Html$Attributes.type$("text")
+                      ,$Html$Attributes.placeholder("word")
+                      ,$Html$Attributes.value(state.currentText)
+                      ,A3($Html$Events.on,
+                      "input",
+                      $Html$Events.targetValue,
+                      function ($) {
+                         return $Signal.message(address)(Update($));
+                      })
+                      ,$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                            ,_0: "fontSize"
+                                                            ,_1: "16px"}
+                                                           ,{ctor: "_Tuple2"
+                                                            ,_0: "padding"
+                                                            ,_1: "4px"}
+                                                           ,{ctor: "_Tuple2"
+                                                            ,_0: "width"
+                                                            ,_1: "200px"}
+                                                           ,{ctor: "_Tuple2"
+                                                            ,_0: "marginBottom"
+                                                            ,_1: "6px"}]))]),
+         _L.fromArray([]))]),
+         tags));
+      }();
+   });
+   var init = {_: {}
+              ,currentText: ""};
+   var Props = function (a) {
+      return {_: {},words: a};
+   };
+   var State = function (a) {
+      return {_: {}
+             ,currentText: a};
+   };
+   _elm.StateProps.WordSelect.values = {_op: _op
+                                       ,State: State
+                                       ,Props: Props
+                                       ,init: init
+                                       ,Update: Update
+                                       ,Enter: Enter
+                                       ,OnDelete: OnDelete
+                                       ,Add: Add
+                                       ,Delete: Delete
+                                       ,None: None
+                                       ,update: update
+                                       ,view: view
+                                       ,wordView: wordView
+                                       ,clickable: clickable};
+   return _elm.StateProps.WordSelect.values;
 };
 Elm.String = Elm.String || {};
 Elm.String.make = function (_elm) {

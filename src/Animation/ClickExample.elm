@@ -55,10 +55,8 @@ update action model =
       , Effects.tick Tick )
 
     Click pos ->
-      let dx = (model.position.x - pos.x)
-          dy = (model.position.y - pos.y)
-          transX = Transition.add (Transition.additive model.time dx) model.transX
-          transY = Transition.add (Transition.additive model.time dy) model.transY
+      let transX = Transition.add (Transition.additive model.time model.position.x pos.x) model.transX
+          transY = Transition.add (Transition.additive model.time model.position.y pos.y) model.transY
       in
       ( { model | position <- pos, transX <- transX, transY <- transY }
       , Effects.none )
